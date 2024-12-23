@@ -1,23 +1,23 @@
 import streamlit as st
-import json
+import json, os
 
-def main():
+def main(data_path):
     st.title("Formation")
-
-    # Vérifier si on a reçu des données de formation
+    chapters_path = os.path.join(data_path,'chapters.json')
+    
+    # Vérifier si le fichier JSON est déjà chargé
     if "formation_data" not in st.session_state:
-        st.warning("Aucun contenu de formation n'est disponible pour le moment.")
-        st.info("Veuillez d'abord aller sur la page Chatbot pour charger une formation.")
-        return
-
-    # Récupérer le contenu JSON depuis la session
-    formation_json = st.session_state["formation_data"]
-
-    try:
-        formation_data = json.loads(formation_json)
-    except json.JSONDecodeError:
-        st.error("Impossible de décoder le JSON de la formation.")
-        return
+        try:
+            with open(chapters_path, 'r', encoding='utf-8') as file:
+                st.session_state['formation_data'] = json.load(file)
+        except FileNotFoundError:
+            st.error("Le fichier 'chapters.json' est introuvable.")
+            return
+        except json.JSONDecodeError as e:
+            st.error(f"Impossible de décoder le JSON de la formation: {e}")
+            return
+    
+    formation_data = st.session_state["formation_data"]
 
     chapters = formation_data.get("chapters", [])
     if not chapters:
@@ -32,9 +32,6 @@ def main():
     with st.sidebar:
         st.header("Chapitres")
         for i, chapter in enumerate(chapters):
-            # Indique si un chapitre est "fait" ou pas.
-            # Ici, on considère qu'un chapitre est fait si l'index est strictement inférieur 
-            # au chapitre en cours (vous pouvez personnaliser la logique).
             status = "✅ " if i < st.session_state["current_chapter"] else ""
             if st.button(f"{status}{chapter['name']}", key=f"chap_{i}"):
                 st.session_state["current_chapter"] = i
@@ -57,11 +54,9 @@ def main():
             responses = question_obj.get("responses", [])
             st.write(f"**Q{idx_q+1}. {question}**")
             
-            # Affichage des réponses sous forme de boutons
             for idx_r, response_obj in enumerate(responses):
                 text = response_obj.get("text", "")
                 valid = response_obj.get("valid", "false").lower() == "true"
-                # On utilise un bouton par réponse
                 if st.button(text, key=f"q{idx_q}-r{idx_r}"):
                     if valid:
                         st.success("Bonne réponse !")
@@ -78,4 +73,5 @@ def main():
             st.write("Félicitations ! Vous avez terminé tous les chapitres.")
 
 if __name__ == "__main__":
-    main()
+    data_path = 'data'
+    main(data_path)
