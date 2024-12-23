@@ -18,23 +18,41 @@ def main(data_path):
             return
     
     formation_data = st.session_state["formation_data"]
-
     chapters = formation_data.get("chapters", [])
+
     if not chapters:
         st.warning("Le JSON de formation ne contient pas de chapitres.")
         return
 
-    # État : index du chapitre en cours
+    # Initialisation de l'état pour les chapitres terminés et le chapitre en cours
+    if "completed_chapters" not in st.session_state:
+        st.session_state["completed_chapters"] = set()  # Utilisation d'un set pour garder les chapitres terminés
+
     if "current_chapter" not in st.session_state:
         st.session_state["current_chapter"] = 0
 
     # Barre latérale : liste des chapitres
     with st.sidebar:
         st.header("Chapitres")
+
         for i, chapter in enumerate(chapters):
-            status = "✅ " if i < st.session_state["current_chapter"] else ""
-            if st.button(f"{status}{chapter['name']}", key=f"chap_{i}"):
-                st.session_state["current_chapter"] = i
+            # Affichage du bouton avec le statut "✅" si le chapitre est terminé
+            if i in st.session_state["completed_chapters"]:
+                # Affichage du bouton avec le statut "✅" si le chapitre est terminé
+                button_label = f"{'✅ ' if i in st.session_state['completed_chapters'] else ''}{chapter['name']}"
+                if st.button(button_label, key=f"chap_{i}"):
+                    st.session_state["current_chapter"] = i
+                    st.experimental_rerun()
+            else:
+                # Affichage du bouton avec statut "✅" si le chapitre est terminé ou non
+                button_label = f"{'✅ ' if i < st.session_state['current_chapter'] else ''}{chapter['name']}"
+                
+                if st.button(button_label, key=f"chap_{i}"):
+                    # Mettre à jour le chapitre actuel seulement si ce chapitre n'est pas encore terminé
+                    if i >= st.session_state["current_chapter"]:
+                        st.session_state["current_chapter"] = i
+                        st.session_state["completed_chapters"].add(i)  # Marquer ce chapitre comme terminé
+                    st.experimental_rerun()  # Rafraîchir l'interface après avoir changé l'état
 
     # Chapitre en cours
     current_index = st.session_state["current_chapter"]
