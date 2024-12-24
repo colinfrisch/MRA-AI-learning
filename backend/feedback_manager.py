@@ -1,54 +1,105 @@
 #Objectif général : modifier le json 'chapitres' en fonction des retours des clients
 
-from pydantic import BaseModel
-import openai
+import json
 from openai import OpenAI
 import streamlit as st
-
-
-client = OpenAI(api_key=st.secrets.general.OPENAI_API_KEY)
-
-client = OpenAI()
+import catalog_manager
+import toml
 
 
 
-tools = [
+functions = [
   {
-      "type": "function",
-      "function": {
           "name": "get_chapter_content",
-          "description": "Obtenir le contenu d'un chapitre du programme d'apprentissage. Appelle-le dès qu'un utilisateur fait un retour sur un chapitre précis. Par exemple, lorsqu'un utilisateur dit 'Outils de résumé : le chapitre n'était pas assez développé'",
+          "description": "Obtenir le contenu d'un chapitre du programme d'apprentissage.",
           "parameters": {
               "type": "object",
               "properties": {
-                  "order_id": {
+                  "chapter_name": {
                       "type": "string",
-                      "description": "Le contenu du chapitre"
+                      "description": "Le nom du chapitre"
                   }
               },
-              "required": ["order_id"],
-              "additionalProperties": False
+              "required": ["chapter_name"],
+          }
+      },
+  {
+     
+          "name": "get_chapter_list",
+          "description": "Obtenir la liste des chapitres du programme d'apprentissage et leur description",
+          "parameters": {
+              "type": "object",
+              "properties": {},
+              "required": [],
           }
       }
-  }
 ]
 
-def get_chapter(user_prompt):
-    messages = []
-    messages.append({"role": "system", "content": "Tu es un employé de service après vente utile et agréable. Utilises les outils fournis pour aider l'utilisateur."})
-    messages.append({"role": "user", "content": user_prompt})
 
-    response = client.beta.chat.completions.create(
-        model='gpt-4o-2024-08-06',
-        messages=messages,
-        tools=tools
-    )
-
-    return response.choices[0].message.tool_calls[0].function
 
 class FeedbackManager():
     def __init__(self):
-        pass
+        # load key from file "../.streamlit/secrets.toml"
+        with open("../.streamlit/secrets.toml", "r") as file:
+            conf = toml.load(file)
+        self.client = OpenAI(api_key=conf['general']['OPENAI_API_KEY'])
 
-    def process_feedback(self,feedback_content:str):
-        pass
+    def process_feedback(self,feedback_content:str) -> str : #Renvoie la liste des modifications effectuées (str)
+        # create a prompt to ask chatGPT to process the feedback
+        messages=[]
+        with open("../data/feedback_prompt.txt", "r") as file:
+            messages.append( {"role": "user", "content": file.read()+feedback_content})
+        
+
+        #call chatGPT
+        dialog_finished = False
+        while not dialog_finished :
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=messages,
+                functions=functions,
+                function_call="auto"
+            )
+            print("----message")
+            print(response.choices[0].message)
+            if "function_call" in response.choices[0].message:
+                function_call = response.choices[0].message['function_call']
+                function_name = function_call['name']
+                arguments = function_call['arguments']
+                result = ''
+                
+                if function_name == "get_chapter_content":
+                    # Parse arguments and call the function
+                    args = json.loads(arguments)
+                    result = catalog_manager.get_chapter_content(args["chapter_name"])
+
+                    # Add the function response back to the conversation
+                    messages.append({
+                        "role": "function",
+                        "name": function_name,
+                        "content": str(result)
+                    })
+                
+                if function_name == "get_chapter_list":
+                    # Parse arguments and call the function
+                    result = catalog_manager.get_chapter_list()
+
+                # Add the function response back to the conversation
+                messages.append({
+                    "role": "function",
+                    "name": function_name,
+                    "content": str(result)
+                })
+                
+            else :
+                dialog_finished = True 
+        return messages[-1]["content"]
+
+
+
+def main():
+    feedback = FeedbackManager().process_feedback("je voudrais en savoit plus sur les api")
+    print(feedback)
+    
+
+main()
