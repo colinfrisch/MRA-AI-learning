@@ -1,8 +1,10 @@
-#Objectif général : modifier le json 'chapitres' en fonction des retours des clients
-
-from pydantic import BaseModel
+from typing import List
 import openai
 from openai import OpenAI
+import streamlit as st
+
+
+client = OpenAI(api_key=st.secrets.general.OPENAI_API_KEY)
 
 client = OpenAI()
 
@@ -41,3 +43,21 @@ def get_chapter(user_prompt):
     )
 
     return response.choices[0].message.tool_calls[0].function
+
+
+
+class CatalogManager():
+    def __init__(self):
+        pass
+
+    def get_chapter_list(self, prompt: str) -> List[str]:
+        pass
+
+    def get_chapter_title(self,prompt:str) -> str :
+        pass
+
+    def get_chapter_content(self,prompt:str) -> str : 
+        pass
+
+    def modify_chapter(self,chapter_title:str,new_chapter_content:str) :
+        pass
