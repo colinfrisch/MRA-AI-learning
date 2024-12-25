@@ -1,24 +1,19 @@
 import streamlit as st
 import json, os
+from backend.catalog_manager import CatalogManager
 
 def main(data_path):
     st.title("Formation")
-    chapters_path = os.path.join(data_path,'chapters.json')
-    
-    # Vérifier si le fichier JSON est déjà chargé
-    if "formation_data" not in st.session_state:
-        try:
-            with open(chapters_path, 'r', encoding='utf-8') as file:
-                st.session_state['formation_data'] = json.load(file)
-        except FileNotFoundError:
-            st.error("Le fichier 'chapters.json' est introuvable.")
-            return
-        except json.JSONDecodeError as e:
-            st.error(f"Impossible de décoder le JSON de la formation: {e}")
-            return
-    
-    formation_data = st.session_state["formation_data"]
-    chapters = formation_data.get("chapters", [])
+    catalog_manager = CatalogManager()
+
+    selected_chapters = []
+    if "selected_training" in st.session_state : 
+        selected_chapters = json.loads(st.session_state["selected_training"])["selected_chapters"]
+    else :
+        st.warning("pas de selection de formation")
+    print(selected_chapters)
+
+    chapters = catalog_manager.get_chapters(selected_chapters)
 
     if not chapters:
         st.warning("Le JSON de formation ne contient pas de chapitres.")
@@ -42,7 +37,7 @@ def main(data_path):
                 button_label = f"{'✅ ' if i in st.session_state['completed_chapters'] else ''}{chapter['name']}"
                 if st.button(button_label, key=f"chap_{i}"):
                     st.session_state["current_chapter"] = i
-                    st.experimental_rerun()
+                    st.rerun()
             else:
                 # Affichage du bouton avec statut "✅" si le chapitre est terminé ou non
                 button_label = f"{'✅ ' if i < st.session_state['current_chapter'] else ''}{chapter['name']}"
@@ -52,7 +47,7 @@ def main(data_path):
                     if i >= st.session_state["current_chapter"]:
                         st.session_state["current_chapter"] = i
                         st.session_state["completed_chapters"].add(i)  # Marquer ce chapitre comme terminé
-                    st.experimental_rerun()  # Rafraîchir l'interface après avoir changé l'état
+                    st.rerun()  # Rafraîchir l'interface après avoir changé l'état
 
     # Chapitre en cours
     current_index = st.session_state["current_chapter"]
@@ -85,7 +80,7 @@ def main(data_path):
     if st.button("Passer au chapitre suivant"):
         if st.session_state["current_chapter"] < len(chapters) - 1:
             st.session_state["current_chapter"] += 1
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.balloons()
             st.write("Félicitations ! Vous avez terminé tous les chapitres.")

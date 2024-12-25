@@ -3,7 +3,7 @@
 import json
 from openai import OpenAI
 import streamlit as st
-from catalog_manager import CatalogManager
+from backend.catalog_manager import CatalogManager
 import toml
 
 
@@ -119,11 +119,3 @@ class FeedbackManager():
                 dialog_finished = True 
         return messages[-1].content
 
-
-
-def main():
-    feedback = FeedbackManager().process_feedback("je voudrais en savoit plus sur les api")
-    print(feedback)
-    
-
-main()

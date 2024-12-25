@@ -9,6 +9,11 @@ class CatalogManager():
             self.chapters = json.load(file)["chapters"]
         pass
 
+    def get_chapters(self, selected_chapters: List[str]) -> List[dict]:
+        if selected_chapters == []:
+            return self.chapters[:3]
+        return [chapter for chapter in self.chapters if chapter['name'] in selected_chapters]
+
     def get_chapter_list(self) -> List[str]:
         return [str(chapter['name'])+' - '+str(chapter['description']) for chapter in self.chapters]
 

@@ -1,2 +1,4 @@
-à partir du feedback donné par l'utilisateur, lis le contenu existant dans le ou les chapitres concernés et fais les modifications nécessaires pour correspondre le mieux possible aux feedbacks grâce aux outils à ta disposition .
+à partir du feedback donné par l'utilisateur, lis le contenu existant dans le ou les chapitres concernés et fais les modifications nécessaires pour correspondre le mieux possible aux feedbacks grâce aux outils à ta disposition.
+Renvoie ensuite la liste des modifications que tu as faites
+
 Feedback :

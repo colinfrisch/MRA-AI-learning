@@ -1,5 +1,6 @@
 import streamlit as st
 from openai import OpenAI
+from backend.catalog_manager import CatalogManager
 import json
 
 client = OpenAI(api_key=st.secrets.general.OPENAI_API_KEY)
@@ -7,6 +8,7 @@ keywords_to_skip = ["--OK","--KO","--PERSONNALISATION","JSON","{"]
 
 def main():
     st.title("Bienvenu chez MRA")
+    catalog_manager = CatalogManager()
                
     def get_next_message():
         response = client.chat.completions.create(
@@ -41,7 +43,13 @@ def main():
 
     # Load the initial prompt from a file as a string
     with open("data/initial_prompt.txt", "r") as file:
-        initial_prompt = {"role": "system", "content": file.read()}
+        prompt= file.read()
+        # replace the placeholder "CATALOG" with the list of chapters
+        chapters = catalog_manager.get_chapter_list()
+        prompt = prompt.replace("CATALOG", "\n".join(chapters))
+
+
+        initial_prompt = {"role": "system", "content":prompt}
 
     if not st.session_state["messages"]:
         st.session_state["messages"].append(initial_prompt)
