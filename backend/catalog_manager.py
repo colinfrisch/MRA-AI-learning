@@ -5,7 +5,7 @@ import json
 
 class CatalogManager():
     def __init__(self):
-        with open('../data/chapters_extended.json', 'r') as file:
+        with open('data/chapters_extended.json', 'r') as file:
             self.chapters = json.load(file)["chapters"]
         pass
 

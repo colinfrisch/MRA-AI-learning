@@ -35,6 +35,27 @@ tools = [
           }
       }
   }
+  ,
+  {"type": "function",
+     "function":{
+          "name": "modify_chapter",
+          "description": "Modifier le contenu d'un chapitre du programme d'apprentissage. Tu dois utiliser cette fonction lorsque on doit modifier le contenu d'un chapitre",
+           "parameters": {
+              "type": "object",
+              "properties": {
+                  "chapter_name": {
+                      "type": "string",
+                      "description": "Le nom du chapitre"
+                  },
+                   "new_chapter_content": {
+                      "type": "string",
+                      "description": "Le nouveau contenu du chapitre"
+                  }
+              },
+              "required": ["chapter_name", "new_chapter_content"],
+          }
+      }
+  }
 ]
 
 
@@ -68,6 +89,8 @@ class FeedbackManager():
                 function_name = tool_call.function.name
                 arguments = json.loads(tool_call.function.arguments)
                 
+                print(f"call Function name: {function_name} with arguments: {arguments}")
+
                 if function_name == "get_chapter_content":
                     # Parse arguments and call the function
                     result = self.catalog_manager.get_chapter_content(arguments["chapter_name"])
@@ -75,6 +98,12 @@ class FeedbackManager():
                 if function_name == "get_chapter_list":
                     # Parse arguments and call the function
                     result = "\n".join(self.catalog_manager.get_chapter_list())
+
+                if function_name == "modify_chapter":
+                    # Parse arguments and call the function
+                    self.catalog_manager.modify_chapter(chapter_title=arguments["chapter_name"]
+                                                                           , new_chapter_content=arguments["new_chapter_content"])
+                    result = f"Le chapitre {arguments['chapter_name']} a été modifié avec succès."
 
 
                 # Add the function response back to the conversation
@@ -85,6 +114,8 @@ class FeedbackManager():
                 })
                 
             else :
+                print(f"Réponse finale: {response.choices[0].message.content}")
+
                 dialog_finished = True 
         return messages[-1]["content"]
 

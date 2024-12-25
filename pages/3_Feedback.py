@@ -5,13 +5,12 @@ def main():
     st.title("Vos retours sont importants pour nous !")
     feedback_manager = FeedbackManager()
 
-
     if "feedback_sent" not in st.session_state:
         st.session_state["feedback_sent"] = False
 
     if not st.session_state["feedback_sent"]:
         # Text input for feedback
-        feedback_input = st.text_area("Quels sont vos retours!")
+        feedback_input = st.text_area("Quels sont vos retours?")
 
         # Button to send feedback
         if st.button("Send Feedback"):
