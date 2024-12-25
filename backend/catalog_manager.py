@@ -21,6 +21,3 @@ class CatalogManager():
 
     def modify_chapter(self,chapter_title:str,new_chapter_content:str) :
         pass
-
-#cat = CatalogManager()
-#print(cat.get_chapter_list())
