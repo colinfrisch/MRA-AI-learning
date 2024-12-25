@@ -3,13 +3,13 @@
 import json
 from openai import OpenAI
 import streamlit as st
-import catalog_manager
+from catalog_manager import CatalogManager
 import toml
 
 
-
-functions = [
-  {
+tools = [
+  { "type": "function",
+     "function":{
           "name": "get_chapter_content",
           "description": "Obtenir le contenu d'un chapitre du programme d'apprentissage.",
           "parameters": {
@@ -22,9 +22,10 @@ functions = [
               },
               "required": ["chapter_name"],
           }
-      },
-  {
-     
+      }
+  },
+  {"type": "function",
+     "function":{
           "name": "get_chapter_list",
           "description": "Obtenir la liste des chapitres du programme d'apprentissage et leur description",
           "parameters": {
@@ -33,21 +34,23 @@ functions = [
               "required": [],
           }
       }
+  }
 ]
 
 
 
 class FeedbackManager():
     def __init__(self):
-        # load key from file "../.streamlit/secrets.toml"
-        with open("../.streamlit/secrets.toml", "r") as file:
+        # load key from file ".streamlit/secrets.toml"
+        with open(".streamlit/secrets.toml", "r") as file:
             conf = toml.load(file)
         self.client = OpenAI(api_key=conf['general']['OPENAI_API_KEY'])
+        self.catalog_manager = CatalogManager()
 
     def process_feedback(self,feedback_content:str) -> str : #Renvoie la liste des modifications effectuées (str)
         # create a prompt to ask chatGPT to process the feedback
         messages=[]
-        with open("../data/feedback_prompt.txt", "r") as file:
+        with open("data/feedback_prompt.txt", "r") as file:
             messages.append( {"role": "user", "content": file.read()+feedback_content})
         
 
@@ -57,38 +60,28 @@ class FeedbackManager():
             response = self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=messages,
-                functions=functions,
-                function_call="auto"
+                tools=tools,
             )
-            print("----message")
-            print(response.choices[0].message)
-            if "function_call" in response.choices[0].message:
-                function_call = response.choices[0].message['function_call']
-                function_name = function_call['name']
-                arguments = function_call['arguments']
-                result = ''
+            messages.append(response.choices[0].message)
+            if response.choices[0].message.tool_calls:
+                tool_call = response.choices[0].message.tool_calls[0]
+                function_name = tool_call.function.name
+                arguments = json.loads(tool_call.function.arguments)
                 
                 if function_name == "get_chapter_content":
                     # Parse arguments and call the function
-                    args = json.loads(arguments)
-                    result = catalog_manager.get_chapter_content(args["chapter_name"])
+                    result = self.catalog_manager.get_chapter_content(arguments["chapter_name"])
 
-                    # Add the function response back to the conversation
-                    messages.append({
-                        "role": "function",
-                        "name": function_name,
-                        "content": str(result)
-                    })
-                
                 if function_name == "get_chapter_list":
                     # Parse arguments and call the function
-                    result = catalog_manager.get_chapter_list()
+                    result = "\n".join(self.catalog_manager.get_chapter_list())
+
 
                 # Add the function response back to the conversation
                 messages.append({
-                    "role": "function",
-                    "name": function_name,
-                    "content": str(result)
+                    "role": "tool",
+                    "tool_call_id": response.choices[0].message.tool_calls[0].id,
+                    "content":  result
                 })
                 
             else :

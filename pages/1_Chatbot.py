@@ -10,7 +10,7 @@ def main():
                
     def get_next_message():
         response = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4",
                 messages=st.session_state["messages"]
             )
         assistant_message = response.choices[0].message.content
@@ -95,11 +95,12 @@ def main():
                 st.switch_page("pages/2_Formation.py")
                
         else:
-          # Text input that triggers `handle_user_input()` when Enter is pressed
-          user_input = st.text_input(
-              "Entrez votre message :", 
-              key="user_input", 
-              on_change=handle_user_input
-          )
+            # Text input that triggers `handle_user_input()` when Enter is pressed
+            user_input = st.text_input(
+                "Entrez votre message :", 
+                key="user_input", 
+                on_change=handle_user_input
+            )
+
 if __name__ == "__main__":
     main()

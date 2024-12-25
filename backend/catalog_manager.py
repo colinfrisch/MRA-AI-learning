@@ -8,7 +8,7 @@ class CatalogManager():
         pass
 
     def get_chapter_list(self) -> List[str]:
-        with open('../data/chapters.json', 'r') as file:
+        with open('data/chapters.json', 'r') as file:
             chapters = json.load(file)["chapters"]
 
         return [str(chapter['name'])+' - '+str(chapter['description']) for chapter in chapters]
@@ -21,6 +21,3 @@ class CatalogManager():
 
     def modify_chapter(self,chapter_title:str,new_chapter_content:str) :
         pass
-
-cat = CatalogManager()
-print(cat.get_chapter_list())
