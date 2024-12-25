@@ -20,7 +20,7 @@ class CatalogManager():
         [chapter.update({'content':new_chapter_content}) for chapter in self.chapters if chapter['name'] == chapter_title]
         
         # Save the new chapters list in test file
-        with open('../data/chapters_extended_test.json', 'w') as file:
+        with open('data/chapters_extended_test.json', 'w') as file:
             json.dump({"chapters":self.chapters}, file)
         
         return self.chapters

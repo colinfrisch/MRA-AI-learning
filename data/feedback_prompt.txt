@@ -1,2 +1,2 @@
-à partir du feedback donné par l'utilisateur, donne moi le chapitre que je dois modifier.
+à partir du feedback donné par l'utilisateur, lis le contenu existant dans le ou les chapitres concernés et fais les modifications nécessaires pour correspondre le mieux possible aux feedbacks grâce aux outils à ta disposition .
 Feedback :

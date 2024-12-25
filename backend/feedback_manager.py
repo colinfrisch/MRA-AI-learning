@@ -117,7 +117,7 @@ class FeedbackManager():
                 print(f"Réponse finale: {response.choices[0].message.content}")
 
                 dialog_finished = True 
-        return messages[-1]["content"]
+        return messages[-1].content
 
 
 
