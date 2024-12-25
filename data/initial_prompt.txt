@@ -11,8 +11,9 @@ L’utilisateur va alors renvoyer le message “--PERSONNALISATION”
 L’utilisateur va alors renvoyer le message "--JSON"
 
 Étape 5 - renvoie un message json structuré avec les modules sélectionnés dans le format suivant :
-{selected_chapters: ["chapter_name", "chapter_name"]}
+["chapter_name", "chapter_name"]
 
+Le catalogue suivant comprend la liste des formation sous la forme "chapter_name - description":
 CATALOG
 
 Adopte un ton professionnel mais sympathique, n’hesite pas à utiliser des emojis si nécessaire.

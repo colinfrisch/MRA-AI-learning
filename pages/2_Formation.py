@@ -8,7 +8,8 @@ def main(data_path):
 
     selected_chapters = []
     if "selected_training" in st.session_state : 
-        selected_chapters = json.loads(st.session_state["selected_training"])["selected_chapters"]
+        print (st.session_state["selected_training"])
+        selected_chapters = json.loads(st.session_state["selected_training"])
     else :
         st.warning("pas de selection de formation")
     print(selected_chapters)
