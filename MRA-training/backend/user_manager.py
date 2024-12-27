@@ -32,7 +32,7 @@ class UserManager:
             db.execute("INSERT INTO users (username, email) VALUES (?, ?)", (username, email))
             db.commit()
 
-    def get_user(self, user_id):
+    def get_user(self, user_id) -> User:
         with DBConnection() as db:
             db.execute("SELECT * FROM users WHERE id = ?", (user_id,))
             row = db.fetchone()

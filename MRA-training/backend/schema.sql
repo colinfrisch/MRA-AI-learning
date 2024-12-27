@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS trainings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    domain TEXT NOT NULL,
+    field TEXT NOT NULL,
     description TEXT NOT NULL,
     chapters TEXT -- storing JSON as TEXT
 );

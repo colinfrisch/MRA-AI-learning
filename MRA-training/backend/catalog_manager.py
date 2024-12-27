@@ -3,7 +3,7 @@ from backend.db import DBConnection
 import json
 from enum import Enum
 
-class Domain(Enum):
+class Field(Enum):
     HISTORY = "HISTORY"
     ECONOMY = "ECONOMY"
     GEOGRAPHY = "GEOGRAPHY"
@@ -35,18 +35,18 @@ class Chapter:
         }
 
 class Training:
-    def __init__(self, training_id: int, name: str, domain: Domain, description: str, chapters: list[Chapter]):
+    def __init__(self, training_id: int, name: str, field: Field, description: str, chapters: list[Chapter]):
         self.id = training_id
         self.name = name
-        self.domain = domain
+        self.field = field
         self.description = description
         self.chapters = chapters
 
     def get_name(self) -> str:
         return self.name
 
-    def get_domain(self) -> Domain:
-        return self.domain
+    def get_field(self) -> Field:
+        return self.field
 
     def get_description(self) -> str:
         return self.description
@@ -55,11 +55,11 @@ class Training:
         return self.chapters
 
 class TrainingManager:
-    def create_training(self, name: str, domain: Domain, description: str, chapters: list[Chapter]):
+    def create_training(self, name: str, field: Field, description: str, chapters: list[Chapter]):
         with DBConnection() as db:
             chapters_json = json.dumps([chapter.to_dict() for chapter in chapters])
-            db.execute("INSERT INTO trainings (name, domain, description, chapters) VALUES (?, ?, ?, ?)", 
-                       (name, domain.value, description, chapters_json))
+            db.execute("INSERT INTO trainings (name, field, description, chapters) VALUES (?, ?, ?, ?)", 
+                       (name, field.value, description, chapters_json))
             db.commit()
 
     def get_all_trainings(self) -> list[Training]:
@@ -72,9 +72,28 @@ class TrainingManager:
                 chapters = [Chapter(chapter["id"], chapter["content"], chapter["question"], 
                                     [Response(resp["text"], resp["valid"]) for resp in chapter["responses"]]) 
                             for chapter in chapters_data]
-                training = Training(row["id"], row["name"], Domain(row["domain"]), row["description"], chapters)
+                training = Training(row["id"], row["name"], Field(row["field"]), row["description"], chapters)
                 trainings.append(training)
             return trainings
+
+    def get_all_training_summaries(self) -> list[dict]:
+        with DBConnection() as db:
+            db.execute("SELECT id, name, field, description FROM trainings")
+            rows = db.fetchall()
+            training_summaries = []
+            for row in rows:
+                training_summary = {
+                    "id": row["id"],
+                    "name": row["name"],
+                    "field": row["field"],
+                    "description": row["description"]
+                }
+                training_summaries.append(training_summary)
+            return training_summaries
+
+    def get_all_training_summary_for_field(self, field: Field) -> list[dict]:
+        all_summaries = self.get_all_training_summary()
+        return [summary for summary in all_summaries if summary["field"] == field.value]
 
 def main():
     training_manager = TrainingManager()
@@ -82,11 +101,11 @@ def main():
         Chapter(1, "Content 1", "Question 1", [Response("Answer 1", True), Response("Answer 2", False)]),
         Chapter(2, "Content 2", "Question 2", [Response("Answer 3", True), Response("Answer 4", False)])
     ]
-    training_manager.create_training("Training 1", Domain.HISTORY, "Description 1", chapters)
+    training_manager.create_training("Training 1", Field.HISTORY, "Description 1", chapters)
     trainings = training_manager.get_all_trainings()
     for training in trainings:
         print("Training Name:", training.get_name())
-        print("Domain:", training.get_domain().value)
+        print("Field:", training.get_field().value)
         print("Description:", training.get_description())
         for chapter in training.get_chapters():
             print("Chapter ID:", chapter.id)
