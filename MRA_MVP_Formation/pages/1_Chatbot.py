@@ -4,7 +4,7 @@ from backend.catalog_manager import CatalogManager
 import json
 
 client = OpenAI(api_key=st.secrets.general.OPENAI_API_KEY)
-keywords_to_skip = ["--OK","--KO","--PERSONNALISATION","JSON","{"]
+keywords_to_skip = ["--OK","--KO","--PERSONNALISATION","--JSON","{"]
 
 def main():
     st.title("Bienvenu chez MRA")
