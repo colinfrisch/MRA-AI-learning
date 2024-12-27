@@ -68,47 +68,35 @@ def main():
         call_openai_chat()
         # Clear the text_input after submission
         st.session_state.user_input = ""
+        st.rerun()
 
     # Container for displaying the conversation
-    top_container = st.container()
-    with top_container:
-        for message in st.session_state["messages"][1:]:  # Skip the first message
-            # if the message starts with one of the keywords_to_skip, skip it
-            if any(message["content"].startswith(keyword) for keyword in keywords_to_skip):
-                print (message["content"])
-                continue 
-            
-            if message["role"] == "user":
-                st.markdown(
-                    f"<div style='text-align: right; color: blue;'>{message['content']}</div>",
-                    unsafe_allow_html=True
-                )
-            else:
-                st.markdown(
-                    f"<div style='text-align: left;'>{message['content']}</div>",
-                    unsafe_allow_html=True
-                )
+    for message in st.session_state.messages[1:]:
+        if any(message["content"].startswith(keyword) for keyword in keywords_to_skip):
+          print (message["content"])
+          continue 
 
+        with st.chat_message(message["role"]):
+          st.markdown(message["content"])
+
+            
     # Container for the user input at the bottom
-    st.write("")
-    bottom_container = st.container()
-    with bottom_container:
-        if "finish" in st.session_state:
-            # create a button to go to the page Formation
-            st.write("Merci pour votre temps, vous pouvez maintenant accéder à la formation!")
-            # write the last message
-            selected_training=st.session_state["messages"][-1]["content"]
-            st.session_state["selected_training"]=selected_training
-            if st.button("Acceder à la formation"):
-                st.switch_page("pages/2_Formation.py")
-               
-        else:
-            # Text input that triggers `handle_user_input()` when Enter is pressed
-            user_input = st.text_input(
-                "Entrez votre message :", 
-                key="user_input", 
-                on_change=handle_user_input
-            )
+    if "finish" in st.session_state:
+        # create a button to go to the page Formation
+        st.write("Merci pour votre temps, vous pouvez maintenant accéder à la formation!")
+        # write the last message
+        selected_training=st.session_state["messages"][-1]["content"]
+        st.session_state["selected_training"]=selected_training
+        if st.button("Acceder à la formation"):
+            st.switch_page("pages/2_Formation.py")
+            
+    else:
+        # Text input that triggers `handle_user_input()` when Enter is pressed
+        prompt = st.chat_input("Say something")
+        if prompt:
+            #st.write(f"User has sent the following prompt: {prompt}")
+            st.session_state.user_input = prompt
+            handle_user_input()
 
 if __name__ == "__main__":
     main()
