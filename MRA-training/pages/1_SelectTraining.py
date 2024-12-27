@@ -3,20 +3,25 @@ import streamlit as st
 from chat.chat_manager import ChatManager
 
 def main():
-  st.title("Traiing")
+  st.title("Training")
 
   if "chatmgr" not in st.session_state:
-        st.session_state["chatmgr"] = ChatManager()
+        client =  ChatManager()
+        client.get_next_message()
+        st.session_state["chatmgr"] = client
+        
 
   client = st.session_state.chatmgr
-  messages = client.get_messages()[1:]
+  messages = client.get_messages()
   
   for message in messages:
-      with st.chat_message(message["role"]):
-          st.markdown(message["content"])
+      if "display" in message and message["display"]:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
   if prompt := st.chat_input("What is up?"):
-      client.add_message("user", prompt)
+      client.respond_to_user( prompt)
+      st.rerun()
 
 
 if __name__ == "__main__":

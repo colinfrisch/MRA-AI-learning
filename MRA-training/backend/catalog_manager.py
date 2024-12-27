@@ -92,7 +92,7 @@ class TrainingManager:
             return training_summaries
 
     def get_all_training_summary_for_field(self, field: Field) -> list[dict]:
-        all_summaries = self.get_all_training_summary()
+        all_summaries = self.get_all_training_summaries()
         return [summary for summary in all_summaries if summary["field"] == field.value]
 
 def main():
