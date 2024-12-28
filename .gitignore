@@ -1,3 +1,5 @@
 .streamlit/secrets.toml
 
 **/supp.ipynb
+MRA-training/mydatabase.db
+MRA-training/.streamlit/secrets.toml
