@@ -94,6 +94,18 @@ class TrainingManager:
         all_summaries = self.get_all_training_summaries()
         return [summary for summary in all_summaries if summary["field"] == field]
 
+    def get_training_by_id(self, training_id: int) -> Training:
+        with DBConnection() as db:
+            db.execute("SELECT * FROM trainings WHERE id = ?", (training_id,))
+            row = db.fetchone()
+            if row:
+                chapters_data = json.loads(row["chapters"])
+                chapters = [Chapter(chapter["id"], chapter["content"], chapter["question"], 
+                                    [Response(resp["text"], resp["valid"]) for resp in chapter["responses"]]) 
+                            for chapter in chapters_data]
+                return Training(row["id"], row["name"], row["field"], row["description"], chapters)
+            return None
+
 def main():
     training_manager = TrainingManager()
     chapters = [

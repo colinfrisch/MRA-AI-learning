@@ -42,9 +42,9 @@ tools = [
            "parameters": {
               "type": "object",
               "properties": {
-                  "description": {
+                  "subject": {
                       "type": "string",
-                      "description": "Description précise du programme d'apprentissage"
+                      "description": "Sujet du programme d'apprentissage"
                   },
                   "field": {
                       "type": "string",
@@ -117,8 +117,8 @@ class ChatManager:
                 case "get_all_training_summary_for_field":
                     result = "\n".join(self.training_manager.get_all_training_summary_for_field(arguments["field"]))
                 case "create_training":
-                    print("...Création d'un programme d'apprentissage avec contenu: ", arguments["description"])
-                    result = self.training_manager.create_and_add_to_db(arguments["field"], arguments["description"])
+                    print("...Création d'un programme d'apprentissage avec : ", arguments["subject"])
+                    result = self.training_manager.create_and_add_to_db(arguments["field"], arguments["subject"])
                 case "subscribe_user_to_training":
                     user = self.user_manager.get_user_by_name(arguments["name"])
                     if not user:

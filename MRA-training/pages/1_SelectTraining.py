@@ -22,7 +22,8 @@ def main():
   if client.is_session_finished():
       if st.button("Premier apprentissage"):
           result = messages[-1]["json"]
-          st.switch_page(f"pages/2_Quizz.py?{result.get('user_name')}")
+          st.session_state["user_name"] = result.get("user_name")
+          st.switch_page(f"pages/2_Quizz.py")
  
   else:
     if prompt := st.chat_input("What is up?"):
