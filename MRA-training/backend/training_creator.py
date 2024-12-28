@@ -60,6 +60,8 @@ class TrainingCreator():
             json_content_complete = json_content_complete.replace("\n","")
             #list indices must be integers or slices, not str ??????????
             chapter["content"] = json.loads(json_content_complete)["content"]
+            chapter["question"] = json.loads(json_content_complete)["question"]
+            chapter["reponses"] = json.loads(json_content_complete)["responses"]
             chapters.append(chapter)
             print("chapter completed : ",chapter["name"])
             
@@ -74,10 +76,7 @@ class TrainingCreator():
         chapters = self.complete_chapters(field)
         chapter_names = [chapter["name"] for chapter in chapters]
             
-        print("training created, chapters :",chapter_names)
-        print("saving to db")
+        print('training created, saving ',len(chapters),' chapters to db')
 
         return self.catalog_manager.create_training(subject, field, 'Un training sur '+subject, chapters)
 
-training_creator = TrainingCreator()
-training_creator.create_and_add_to_db("Géologie","La fosse des Marianes")

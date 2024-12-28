@@ -13,8 +13,7 @@ Consignes pour la question de QCM :
 
     Rédige une question pertinente et difficile, en rapport direct avec le contenu de la leçon.
     Propose 5 réponses possibles, dont une seule est correcte.
-    Chaque réponse doit être clairement formulée, être difficile et refléter les informations mentionnées précédemment dans le chapitre.
-
+    Assure-toi que le contenu et le QCM soient en adéquation avec le contenu du cours et qu’ils reflètent un haut niveau de maîtrise du sujet.
 
 Format de réponse attendu :
 
@@ -23,20 +22,15 @@ Retourne le résultat au format JSON strictement comme indiqué ci-dessous, sans
 ```json
 {
   "content": "Texte de la leçon ici.",
-
-  "test": [
-    {
-      "question": "Texte de la question ici.",
-      "responses": [
-        {"text": "Texte de la réponse 1", "valid": "true"},
-        {"text": "Texte de la réponse 2", "valid": "false"},
-        {"text": "Texte de la réponse 3", "valid": "false"},
-        {"text": "Texte de la réponse 4", "valid": "false"},
-        {"text": "Texte de la réponse 5", "valid": "false"}
-      ]
-    }
+  "question": "Texte de la question ici.",
+  "responses": [
+    {"text": "Texte de la réponse 1", "valid": "true"},
+    {"text": "Texte de la réponse 2", "valid": "false"},
+    {"text": "Texte de la réponse 3", "valid": "false"},
+    {"text": "Texte de la réponse 4", "valid": "false"},
+    {"text": "Texte de la réponse 5", "valid": "false"}
   ]
+
 }
 ```
 
-Assure-toi que le contenu et le QCM soient en adéquation avec les consignes et qu’ils reflètent un haut niveau de maîtrise du sujet.
