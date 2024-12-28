@@ -20,6 +20,7 @@ Format de réponse attendu :
 
 Retourne le résultat au format JSON strictement comme indiqué ci-dessous, sans commentaire ou texte supplémentaire.
 
+```json
 {
   "content": "Texte de la leçon ici.",
 
@@ -36,5 +37,6 @@ Retourne le résultat au format JSON strictement comme indiqué ci-dessous, sans
     }
   ]
 }
+```
 
 Assure-toi que le contenu et le QCM soient en adéquation avec les consignes et qu’ils reflètent un haut niveau de maîtrise du sujet.
