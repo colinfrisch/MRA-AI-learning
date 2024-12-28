@@ -2,31 +2,37 @@ import streamlit as st
 from backend.user_manager import UserManager
 from backend.catalog_manager import TrainingManager
 
-def get_user_from_url():
-    query_params = st.experimental_get_query_params()
-    return query_params.get("username", [None])[0]
 
 def main():
     st.title("Quizz Page")
 
-    username = get_user_from_url()
-    if not username:
+    # retrrieve user name from URL or from session state
+    user_name = None
+    if "user_name" in st.query_params:
+      user_name = st.query_params["user_name"]
+    if user_name is None:
+      user_name = st.session_state.get("user_name",None)
+
+    if user_name is None:
         st.error("Username not found in URL")
         return
 
     user_manager = UserManager()
-    user = user_manager.get_user_by_name(username)
+    user = user_manager.get_user_by_name(user_name)
     if not user:
-        st.error(f"User '{username}' not found")
+        st.error(f"User '{user_name}' not found")
         return
 
     current_training = user.get_current_training()
+    st.write(f"Current training: {current_training.get_training_id()}")
     if not current_training:
         st.error("No current training found for the user")
         return
 
     training_manager = TrainingManager()
     training = training_manager.get_training_by_id(current_training.get_training_id())
+    st.write(f"Current training: {training}")
+
     chapters_done = current_training.get_chapters_done()
     next_chapter = None
 
