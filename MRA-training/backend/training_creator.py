@@ -55,7 +55,8 @@ class TrainingCreator():
                 model="gpt-4o-mini",
                 messages=messages,
             )
-            
+            print ("-----------------")
+            print (response_complete.choices[0].message.content)
             json_content_complete = re.search(r"```json(.*?)```", response_complete.choices[0].message.content, re.DOTALL).group(1).strip()
             json_content_complete = json_content_complete.replace("\n","")
             #list indices must be integers or slices, not str ??????????
@@ -80,3 +81,5 @@ class TrainingCreator():
 
         return self.catalog_manager.create_training(subject, field, 'Un training sur '+subject, chapters)
 
+#training_creator = TrainingCreator()
+#training_creator.create_and_add_to_db("Géologie","La fosse des Marianes")

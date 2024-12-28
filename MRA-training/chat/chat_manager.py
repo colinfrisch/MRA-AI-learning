@@ -51,7 +51,7 @@ tools = [
                       "description": "Domaine du programme d'apprentissage"
                   }
               },
-              "required": ["description"],
+              "required": ["description", "field"],
           }
       }
   },
@@ -92,7 +92,7 @@ class ChatManager:
           self.messages.append( {"role": "system", "content": file.read(), "display": False})
       self.training_manager = TrainingManager()
       self.user_manager = UserManager()
-      self.training_manager = TrainingCreator()
+      self.training_creator = TrainingCreator()
       self.session_finished = False
 
   def get_next_message(self):
@@ -115,16 +115,16 @@ class ChatManager:
                 case "get_training_list":
                     result = self.training_manager.get_all_training_summaries()
                 case "get_all_training_summary_for_field":
-                    result = "\n".join(self.training_manager.get_all_training_summary_for_field(arguments["field"]))
+                    result = json.dumps(self.training_manager.get_all_training_summary_for_field(arguments["field"]))
                 case "create_training":
                     print("...Création d'un programme d'apprentissage avec : ", arguments["subject"])
-                    result = self.training_manager.create_and_add_to_db(arguments["field"], arguments["subject"])
+                    result = self.training_creator.create_and_add_to_db(arguments["field"], arguments["subject"])
                 case "subscribe_user_to_training":
                     user = self.user_manager.get_user_by_name(arguments["name"])
                     if not user:
                         print(f"...Creating user {arguments['name']} with phone {arguments['phone']}")
                         user = self.user_manager.create_user(arguments["name"], arguments["phone"])
-                    print(f"...Subscribe user.id {user.id} to training phone {arguments['program_id']}")
+                    print(f"...Subscribe user.id {user.id} to training  {arguments['program_id']}")
                     self.user_manager.set_current_training(user.id, arguments["program_id"])
                     result = "Utilisateur inscrit avec succès!"
                 case _:

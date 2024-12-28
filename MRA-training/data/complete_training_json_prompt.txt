@@ -17,7 +17,7 @@ Consignes pour la question de QCM :
 
 Format de réponse attendu :
 
-Retourne le résultat au format JSON strictement comme indiqué ci-dessous, sans commentaire ou texte supplémentaire.
+Retourne uniquement le résultat  au format JSON strictement comme indiqué ci-dessous, sans commentaire ou texte supplémentaire.
 
 ```json
 {
@@ -33,4 +33,3 @@ Retourne le résultat au format JSON strictement comme indiqué ci-dessous, sans
 
 }
 ```
-
