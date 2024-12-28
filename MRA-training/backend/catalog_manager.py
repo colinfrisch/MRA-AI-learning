@@ -14,8 +14,9 @@ class Response:
 
 
 class Chapter:
-    def __init__(self, chapter_id: int, content: str, question: str, responses: list[Response]):
+    def __init__(self, chapter_id: int, name: str, content: str, question: str, responses: list[Response]):
         self.id = chapter_id
+        self.name = name
         self.content = content
         self.question = question
         self.responses = responses
@@ -26,6 +27,7 @@ class Chapter:
     def to_dict(self):
         return {
             "id": self.id,
+            "name": self.name,
             "content": self.content,
             "question": self.question,
             "responses": [response.to_dict() for response in self.responses]
@@ -68,7 +70,7 @@ class TrainingManager:
             trainings = []
             for row in rows:
                 chapters_data = json.loads(row["chapters"])
-                chapters = [Chapter(chapter["id"], chapter["content"], chapter["question"], 
+                chapters = [Chapter(chapter["id"], chapter["name"], chapter["content"], chapter["question"], 
                                     [Response(resp["text"], resp["valid"]) for resp in chapter["responses"]]) 
                             for chapter in chapters_data]
                 training = Training(row["id"], row["name"], row["field"], row["description"], chapters)
@@ -100,7 +102,7 @@ class TrainingManager:
             row = db.fetchone()
             if row:
                 chapters_data = json.loads(row["chapters"])
-                chapters = [Chapter(chapter["id"], chapter["content"], chapter["question"], 
+                chapters = [Chapter(chapter["id"], chapter["name"], chapter["content"], chapter["question"], 
                                     [Response(resp["text"], resp["valid"]) for resp in chapter["responses"]]) 
                             for chapter in chapters_data]
                 return Training(row["id"], row["name"], row["field"], row["description"], chapters)
@@ -109,8 +111,8 @@ class TrainingManager:
 def main():
     training_manager = TrainingManager()
     chapters = [
-        Chapter(1, "Content 1", "Question 1", [Response("Answer 1", True), Response("Answer 2", False)]),
-        Chapter(2, "Content 2", "Question 2", [Response("Answer 3", True), Response("Answer 4", False)])
+        Chapter(1, "Chapter 1", "Content 1", "Question 1", [Response("Answer 1", True), Response("Answer 2", False)]),
+        Chapter(2, "Chapter 2", "Content 2", "Question 2", [Response("Answer 3", True), Response("Answer 4", False)])
     ]
     training_manager.create_training("Training 1", "history", "Description 1", chapters)
     trainings = training_manager.get_all_trainings()
@@ -120,6 +122,7 @@ def main():
         print("Description:", training.get_description())
         for chapter in training.get_chapters():
             print("Chapter ID:", chapter.id)
+            print("Name:", chapter.name)
             print("Content:", chapter.content)
             print("Question:", chapter.question)
             for response in chapter.get_responses():
