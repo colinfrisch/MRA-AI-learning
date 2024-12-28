@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL,
-    email TEXT NOT NULL,
+    phone TEXT NOT NULL,
     current_training TEXT, -- storing JSON as TEXT
     finished_training TEXT -- storing JSON as TEXT
 );

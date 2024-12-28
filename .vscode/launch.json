@@ -14,6 +14,22 @@
       "env": {
         "PYTHONPATH": "${workspaceFolder}/MRA-training"
       }
+    },
+    {
+      "name": "Debug Streamlit App",
+      "type": "python",
+      "request": "launch",
+      "module": "streamlit",
+      "args": [
+        "run",
+        "${workspaceFolder}/MRA-training/main.py"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/MRA-training",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/MRA-training"
+      }
     }
+    
   ]
 }

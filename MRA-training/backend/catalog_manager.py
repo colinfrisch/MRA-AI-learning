@@ -16,6 +16,7 @@ class Response:
     def to_dict(self):
         return {"text": self.text, "valid": self.valid}
 
+
 class Chapter:
     def __init__(self, chapter_id: int, content: str, question: str, responses: list[Response]):
         self.id = chapter_id
@@ -35,7 +36,7 @@ class Chapter:
         }
 
 class Training:
-    def __init__(self, training_id: int, name: str, field: Field, description: str, chapters: list[Chapter]):
+    def __init__(self, training_id: int, name: str, field: Field, description: str, chapters: list[dict]):
         self.id = training_id
         self.name = name
         self.field = field
@@ -51,16 +52,18 @@ class Training:
     def get_description(self) -> str:
         return self.description
 
-    def get_chapters(self) -> list[Chapter]:
+    def get_chapters(self) -> list[dict]:
         return self.chapters
 
 class TrainingManager:
-    def create_training(self, name: str, field: Field, description: str, chapters: list[Chapter]):
+    def create_training(self, name: str, field: Field, description: str, chapters: list[dict]):
         with DBConnection() as db:
-            chapters_json = json.dumps([chapter.to_dict() for chapter in chapters])
+            chapters_json = json.dumps([chapter for chapter in chapters])
             db.execute("INSERT INTO trainings (name, field, description, chapters) VALUES (?, ?, ?, ?)", 
                        (name, field.value, description, chapters_json))
             db.commit()
+        # return the training 
+        return Training(db.cursor.lastrowid, name, field, description, chapters)
 
     def get_all_trainings(self) -> list[Training]:
         with DBConnection() as db:

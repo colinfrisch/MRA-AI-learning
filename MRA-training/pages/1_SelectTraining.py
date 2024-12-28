@@ -19,9 +19,15 @@ def main():
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-  if prompt := st.chat_input("What is up?"):
-      client.respond_to_user( prompt)
-      st.rerun()
+  if client.is_session_finished():
+      if st.button("Premier apprentissage"):
+          result = messages[:1]["json"]
+          st.switch_page(f"pages/2_Quizz.py?{result.get('user_name')}")
+ 
+  else:
+    if prompt := st.chat_input("What is up?"):
+        client.respond_to_user( prompt)
+        st.rerun()
 
 
 if __name__ == "__main__":
