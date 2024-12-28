@@ -3,10 +3,6 @@ from backend.db import DBConnection
 import json
 from enum import Enum
 
-class Field(Enum):
-    HISTORY = "HISTORY"
-    ECONOMY = "ECONOMY"
-    GEOGRAPHY = "GEOGRAPHY"
 
 class Response:
     def __init__(self, text: str, valid: bool):
@@ -36,7 +32,7 @@ class Chapter:
         }
 
 class Training:
-    def __init__(self, training_id: int, name: str, field: Field, description: str, chapters: list[dict]):
+    def __init__(self, training_id: int, name: str, field: str, description: str, chapters: list[dict]):
         self.id = training_id
         self.name = name
         self.field = field
@@ -46,7 +42,7 @@ class Training:
     def get_name(self) -> str:
         return self.name
 
-    def get_field(self) -> Field:
+    def get_field(self) -> str:
         return self.field
 
     def get_description(self) -> str:
@@ -56,11 +52,11 @@ class Training:
         return self.chapters
 
 class TrainingManager:
-    def create_training(self, name: str, field: Field, description: str, chapters: list[dict]):
+    def create_training(self, name: str, field: str, description: str, chapters: list[dict]):
         with DBConnection() as db:
             chapters_json = json.dumps([chapter for chapter in chapters])
             db.execute("INSERT INTO trainings (name, field, description, chapters) VALUES (?, ?, ?, ?)", 
-                       (name, field.value, description, chapters_json))
+                       (name, field, description, chapters_json))
             db.commit()
         # return the training 
         return Training(db.cursor.lastrowid, name, field, description, chapters)
@@ -75,7 +71,7 @@ class TrainingManager:
                 chapters = [Chapter(chapter["id"], chapter["content"], chapter["question"], 
                                     [Response(resp["text"], resp["valid"]) for resp in chapter["responses"]]) 
                             for chapter in chapters_data]
-                training = Training(row["id"], row["name"], Field(row["field"]), row["description"], chapters)
+                training = Training(row["id"], row["name"], row["field"], row["description"], chapters)
                 trainings.append(training)
             return trainings
 
@@ -94,9 +90,9 @@ class TrainingManager:
                 training_summaries.append(training_summary)
             return training_summaries
 
-    def get_all_training_summary_for_field(self, field: Field) -> list[dict]:
+    def get_all_training_summary_for_field(self, field: str) -> list[dict]:
         all_summaries = self.get_all_training_summaries()
-        return [summary for summary in all_summaries if summary["field"] == field.value]
+        return [summary for summary in all_summaries if summary["field"] == field]
 
 def main():
     training_manager = TrainingManager()
@@ -104,11 +100,11 @@ def main():
         Chapter(1, "Content 1", "Question 1", [Response("Answer 1", True), Response("Answer 2", False)]),
         Chapter(2, "Content 2", "Question 2", [Response("Answer 3", True), Response("Answer 4", False)])
     ]
-    training_manager.create_training("Training 1", Field.HISTORY, "Description 1", chapters)
+    training_manager.create_training("Training 1", "history", "Description 1", chapters)
     trainings = training_manager.get_all_trainings()
     for training in trainings:
         print("Training Name:", training.get_name())
-        print("Field:", training.get_field().value)
+        print("Field:", training.get_field())
         print("Description:", training.get_description())
         for chapter in training.get_chapters():
             print("Chapter ID:", chapter.id)

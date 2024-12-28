@@ -21,7 +21,7 @@ def main():
 
   if client.is_session_finished():
       if st.button("Premier apprentissage"):
-          result = messages[:1]["json"]
+          result = messages[-1]["json"]
           st.switch_page(f"pages/2_Quizz.py?{result.get('user_name')}")
  
   else:

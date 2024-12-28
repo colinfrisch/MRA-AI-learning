@@ -2,7 +2,10 @@ import json
 from openai import OpenAI
 from backend.catalog_manager import TrainingManager
 from backend.user_manager import UserManager
+from backend.training_creator import TrainingCreator
 import toml
+import re
+
 
 tools = [
   { "type": "function",
@@ -42,6 +45,10 @@ tools = [
                   "description": {
                       "type": "string",
                       "description": "Description précise du programme d'apprentissage"
+                  },
+                  "field": {
+                      "type": "string",
+                      "description": "Domaine du programme d'apprentissage"
                   }
               },
               "required": ["description"],
@@ -85,11 +92,12 @@ class ChatManager:
           self.messages.append( {"role": "system", "content": file.read(), "display": False})
       self.training_manager = TrainingManager()
       self.user_manager = UserManager()
+      self.training_manager = TrainingCreator()
       self.session_finished = False
 
   def get_next_message(self):
       dialog_finished = False
-      while not dialog_finished :
+      while not dialog_finished:
           response = self.client.chat.completions.create(
               model="gpt-4o-mini",
               messages=self.messages,
@@ -110,14 +118,15 @@ class ChatManager:
                     result = "\n".join(self.training_manager.get_all_training_summary_for_field(arguments["field"]))
                 case "create_training":
                     print("...Création d'un programme d'apprentissage avec contenu: ", arguments["description"])
-                    result = "programme d'apprentissage créé avec succès!"
+                    result = self.training_manager.create_and_add_to_db(arguments["field"], arguments["description"])
                 case "subscribe_user_to_training":
                     user = self.user_manager.get_user_by_name(arguments["name"])
                     if not user:
                         print(f"...Creating user {arguments['name']} with phone {arguments['phone']}")
-                        self.user_manager.create_user(arguments["name"], arguments["phone"])
+                        user = self.user_manager.create_user(arguments["name"], arguments["phone"])
                     print(f"...Subscribe user.id {user.id} to training phone {arguments['program_id']}")
                     self.user_manager.set_current_training(user.id, arguments["program_id"])
+                    result = "Utilisateur inscrit avec succès!"
                 case _:
                     print("Function not found")
                     result = "Function not found"
@@ -127,19 +136,22 @@ class ChatManager:
                   "tool_call_id": response.choices[0].message.tool_calls[0].id,
                   "content":  result,
               })
-          else :
+          else:
               dialog_finished = True
-              # if the message content starts with "{", dialog is finished
-              if assistant_message.content.startswith("{"):
-                  # convert the message content to a dictionary
-                  message_dict = json.loads(assistant_message.content)
-                  self.messages.append({
-                      "role": assistant_message.role,
-                      "content":  assistant_message.content,
-                      "json" : message_dict,
-                      "display": False
-                  })
-                  self.session_finished = True
+              # if the message content contains "```json", extract it
+              if "```json" in assistant_message.content:
+                  json_match = re.search(r"```json(.*?)```", assistant_message.content, re.DOTALL)
+                  if json_match:
+                      json_content = json_match.group(1).strip()
+                      message_dict = json.loads(json_content)
+                      text_before_json = assistant_message.content.split("```json")[0].strip()
+                      self.messages.append({
+                          "role": assistant_message.role,
+                          "content": text_before_json,
+                          "json": message_dict,
+                           "display": True
+                      })
+                      self.session_finished = True
               else:                  
                 self.messages.append({
                     "role": assistant_message.role,

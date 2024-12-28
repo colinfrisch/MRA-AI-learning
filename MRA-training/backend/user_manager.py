@@ -31,6 +31,8 @@ class UserManager:
         with DBConnection() as db:
             db.execute("INSERT INTO users (username, phone) VALUES (?, ?)", (username, phone))
             db.commit()
+        # return the user
+        return User(db.cursor.lastrowid, username, phone, None, None)
 
     def get_user(self, user_id) -> User:
         with DBConnection() as db:
