@@ -1,5 +1,6 @@
 **/.streamlit/secrets.toml
 
+**/__pycache__
 **/supp.ipynb
 MRA-training/mydatabase.db
 MRA-training/.streamlit/secrets.toml
