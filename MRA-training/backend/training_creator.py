@@ -1,4 +1,5 @@
 import json
+import re
 from openai import OpenAI
 from backend.catalog_manager import *
 import toml
@@ -19,38 +20,48 @@ class TrainingCreator():
         messages=[]
         
         with open("data/new_training_json_prompt.txt", "r") as file:
-            file.replace("[[DOMAINE]]",field)
-            file.replace("[[SUJET]]",subject)
-            messages.append( {"role": "user", "content": file.read()})
+            content = file.read()
+        content=content.replace("[[DOMAINE]]",field)
+        content=content.replace("[[SUJET]]",subject)
+        messages.append( {"role": "user", "content": content})
         
         response = self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=messages,
             )
         
-        self.training_json = json.loads(response.choices[0].message.content)
+        #on filtre ce qui'il y a entre les deux balises ```json et ``` dans response.choices[0].message.content
+        json_content = re.search(r"```json(.*?)```", response.choices[0].message.content, re.DOTALL).group(1).strip()
+        self.training_json = json.loads(json_content)
         
-        print("first json chapter created :",self.training_json)
+        print("first json chapter created : len = ",len(self.training_json),'-------------')
     
     
     
     def complete_chapters(self,field:str):
         chapters = []
         
-        for chapter in self.training_json["chapters"]:
+        #Erreur ICI
+        for chapter in self.training_json:
             messages=[]
-            with open("data/new_chapter_json_prompt.txt", "r") as file:
-                file.replace("[[DOMAINE]]",field)
-                file.replace("[[SUJET]]",chapter["title"])
-                messages.append( {"role": "user", "content": file.read()})
             
-            response = self.client.chat.completions.create(
+            with open("data/complete_training_json_prompt.txt", "r") as file:
+                content = file.read()
+            content=content.replace("[[DOMAINE]]",field)
+            content=content.replace("[[NOM_CHAPITRE]]",chapter["name"])
+            messages.append( {"role": "user", "content": content})
+            
+            response_complete = self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=messages,
             )
             
-            chapter["content"] = json.loads(response.choices[0].message.content)["content"]
+            json_content_complete = re.search(r"```json(.*?)```", response_complete.choices[0].message.content, re.DOTALL).group(1).strip()
+            json_content_complete = json_content_complete.replace("\n","")
+            #list indices must be integers or slices, not str ??????????
+            chapter["content"] = json.loads(json_content_complete)["content"]
             chapters.append(chapter)
+            print("chapter completed : ",chapter["name"])
             
         return chapters
 
@@ -61,11 +72,11 @@ class TrainingCreator():
         
         
         chapters = self.complete_chapters(field)
-        chapter_names = [chapter["title"] for chapter in chapters]
+        chapter_names = [chapter["name"] for chapter in chapters]
             
         print("training created, chapters :",chapter_names)
         print("saving to db")
-        #self.TrainingManager.create_training(subject, field, 'a chapter about '+subject, chapter_names)
+        self.TrainingManager.create_training(subject, field, 'a chapter about '+subject, chapters)
 
 training_creator = TrainingCreator()
 training_creator.create_and_add_to_db("Géologie","La fosse des Marianes")

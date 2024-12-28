@@ -2,6 +2,7 @@ Tu es un expert en [[DOMAINE]]. Pour le chapitre [[NOM_CHAPITRE]], fais une leç
 
 Pour cette leçon, fais une question de qcm dans la rubrique 'question' (une seule réponse vraie pour chaque réponse possible, 5 réponses possibles à chaque fois). Le QCM doit être difficile et sur ce qui est évoqué dans le texte du chapitre. La rubrique 'test' est donc de la forme :
 
+```json
 {
   "content":"..."
 
@@ -15,5 +16,6 @@ Pour cette leçon, fais une question de qcm dans la rubrique 'question' (une seu
     }
   ]
 }
+```
 
 Renvoie uniquement le json et rien d'autre
