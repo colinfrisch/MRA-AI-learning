@@ -79,5 +79,5 @@ class TrainingCreator():
 
         return self.catalog_manager.create_training(subject, field, 'Un training sur '+subject, chapters)
 
-#training_creator = TrainingCreator()
-#training_creator.create_and_add_to_db("Géologie","La fosse des Marianes")
+training_creator = TrainingCreator()
+training_creator.create_and_add_to_db("Géologie","La fosse des Marianes")

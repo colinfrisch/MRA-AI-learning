@@ -1,21 +1,40 @@
-Tu es un expert en [[DOMAINE]]. Pour le chapitre [[NOM_CHAPITRE]], fais une leçon. Tu dois être très précis et documenté sans rien dire de trop long ou innutile. La leçon est composée de trois paragraphes très développés. Ajoute cette leçon dans la rubrique 'content' du json.
+Tu es un expert de renommée dans [[DOMAINE]]. Ta mission est de créer un contenu éducatif précis, bien documenté et structuré pour le chapitre intitulé [[NOM_CHAPITRE]].
+Consignes pour la leçon :
 
-Pour cette leçon, fais une question de qcm dans la rubrique 'question' (une seule réponse vraie pour chaque réponse possible, 5 réponses possibles à chaque fois). Le QCM doit être difficile et sur ce qui est évoqué dans le texte du chapitre. La rubrique 'test' est donc de la forme :
+- Rédige un texte dense, clair et très informatif en trois paragraphes développés :
+  1. Introduction : Présente le sujet et son importance dans le domaine, en expliquant ses concepts-clés.
+  2. Développement : Explore en profondeur (de manière très développée) les aspects cruciaux avec des exemples pertinents, des arguments étayés et des données scientifiques.
+  3. Conclusion : Résume les points essentiels tout en offrant des perspectives ou en soulignant les implications pratiques du sujet.
+- Appuie-toi sur des sources fiables : insère des liens vers des articles scientifiques, des travaux de recherche ou des ressources reconnues pour renforcer la crédibilité du contenu.
+- Exclue toute phrase ou section superflue.
 
-```json
+
+Consignes pour la question de QCM :
+
+    Rédige une question pertinente et difficile, en rapport direct avec le contenu de la leçon.
+    Propose 5 réponses possibles, dont une seule est correcte.
+    Chaque réponse doit être clairement formulée, être difficile et refléter les informations mentionnées précédemment dans le chapitre.
+
+
+Format de réponse attendu :
+
+Retourne le résultat au format JSON strictement comme indiqué ci-dessous, sans commentaire ou texte supplémentaire.
+
 {
-  "content":"..."
+  "content": "Texte de la leçon ici.",
 
   "test": [
     {
-      "question": "...",
+      "question": "Texte de la question ici.",
       "responses": [
-        {"text": "...", "valid": "true"},
-        {"text": "...", "valid": "false"}
+        {"text": "Texte de la réponse 1", "valid": "true"},
+        {"text": "Texte de la réponse 2", "valid": "false"},
+        {"text": "Texte de la réponse 3", "valid": "false"},
+        {"text": "Texte de la réponse 4", "valid": "false"},
+        {"text": "Texte de la réponse 5", "valid": "false"}
       ]
     }
   ]
 }
-```
 
-Renvoie uniquement le json et rien d'autre
+Assure-toi que le contenu et le QCM soient en adéquation avec les consignes et qu’ils reflètent un haut niveau de maîtrise du sujet.
