@@ -107,6 +107,13 @@ class TrainingManager:
                             for chapter in chapters_data]
                 return Training(row["id"], row["name"], row["field"], row["description"], chapters)
             return None
+    
+    def modify_chapters_in_training(self, training_id: int, chapters: list[dict]):
+        with DBConnection() as db:
+            chapters_json = json.dumps(chapters)
+            db.execute("UPDATE trainings SET chapters = ? WHERE id = ?", (chapters_json, training_id))
+            db.commit()
+        return 'chapitres modifiés dans la database'
 
 def main():
     training_manager = TrainingManager()
