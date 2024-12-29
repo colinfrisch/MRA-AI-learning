@@ -113,12 +113,13 @@ class ChatManager:
 
               match function_name:
                 case "get_training_list":
-                    result = self.training_manager.get_all_training_summaries()
+                    result = json.dumps(self.training_manager.get_all_training_summaries())
                 case "get_all_training_summary_for_field":
                     result = json.dumps(self.training_manager.get_all_training_summary_for_field(arguments["field"]))
                 case "create_training":
                     print("...Création d'un programme d'apprentissage avec : ", arguments["subject"])
-                    result = self.training_creator.create_and_add_to_db(arguments["field"], arguments["subject"])
+                    training = self.training_creator.create_and_add_to_db(arguments["field"], arguments["subject"])
+                    result = json.dumps(training.to_dict())
                 case "subscribe_user_to_training":
                     user = self.user_manager.get_user_by_name(arguments["name"])
                     if not user:

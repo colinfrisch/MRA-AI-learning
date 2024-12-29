@@ -21,7 +21,6 @@ Le JSON est de la forme :
   "content": "...",
   "question": "...",
   "responses": []
-        
 },
 {
   "id": "3",

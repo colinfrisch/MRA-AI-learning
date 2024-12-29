@@ -73,6 +73,17 @@ class UserManager:
                 db.execute("UPDATE users SET current_training = ? WHERE id = ?", (current_training, user_id))
                 db.commit()
 
+    def set_chapter_finished(self, user_id, chapter_id, success):
+        with DBConnection() as db:
+            db.execute("SELECT current_training FROM users WHERE id = ?", (user_id,))
+            row = db.fetchone()
+            if row and row["current_training"]:
+                current_training_data = json.loads(row["current_training"])
+                current_training_data["chapters_done"].append(chapter_id)
+                current_training = json.dumps(current_training_data)
+                db.execute("UPDATE users SET current_training = ? WHERE id = ?", (current_training, user_id))
+                db.commit()
+
 def main():
     user_manager = UserManager()
     user_manager.create_user("john_doe", "123-456-7890")
