@@ -1,5 +1,5 @@
 
-Agis comme un expert en [[DOMAINE]] et fais moi 10 leçons à apprendre en 10 jours sur [[SUJET]]. Chaque leçon doit être importante, différente des autres, comporter des exemples nommés et précis. Donne le résultat sous forme d'un json avec le nom de chaque chapitre dans 'name'. Tu dois laisser les champs 'id','content', 'question' et 'reponses' comlètement vides. Le JSON est de la forme :
+Agis comme un expert en [[DOMAINE]] et fais moi 10 leçons à apprendre en 10 jours sur [[SUJET]]. Chaque leçon doit être importante, différente des autres, comporter des exemples nommés et précis. Donne le résultat sous forme d'un json avec le nom de chaque chapitre dans 'name'. Tu dois laisser les champs 'id','content', 'question' et 'responses' comlètement vides. Le JSON est de la forme :
 
 ```json
 {
@@ -8,7 +8,6 @@ Agis comme un expert en [[DOMAINE]] et fais moi 10 leçons à apprendre en 10 jo
   "content": "...",
   "question": "...",
   "responses": []
-        
 },
 ...
 ```

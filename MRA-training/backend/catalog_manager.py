@@ -34,7 +34,7 @@ class Chapter:
         }
 
 class Training:
-    def __init__(self, training_id: int, name: str, field: str, description: str, chapters: list[dict]):
+    def __init__(self, training_id: int, name: str, field: str, description: str, chapters: list[Chapter]):
         self.id = training_id
         self.name = name
         self.field = field
@@ -50,8 +50,17 @@ class Training:
     def get_description(self) -> str:
         return self.description
 
-    def get_chapters(self) -> list[dict]:
+    def get_chapters(self) -> list[Chapter]:
         return self.chapters
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "field": self.field,
+            "description": self.description,
+            "chapters": [chapter.to_dict() for chapter in self.chapters]
+        }
 
 class TrainingManager:
     def create_training(self, name: str, field: str, description: str, chapters: list[dict]):
@@ -60,8 +69,12 @@ class TrainingManager:
             db.execute("INSERT INTO trainings (name, field, description, chapters) VALUES (?, ?, ?, ?)", 
                        (name, field, description, chapters_json))
             db.commit()
-        # return the training 
-        return Training(db.cursor.lastrowid, name, field, description, chapters)
+        # return the training and create ids for chapters, responses
+        chapters_structured = [Chapter(chapter["id"], chapter["name"], chapter["content"], chapter["question"], 
+                                    [Response(resp["text"], resp["valid"]) for resp in chapter["responses"]]) 
+                            for chapter in chapters]
+        
+        return Training(db.cursor.lastrowid, name, field, description, chapters_structured)
 
     def get_all_trainings(self) -> list[Training]:
         with DBConnection() as db:
@@ -71,7 +84,7 @@ class TrainingManager:
             for row in rows:
                 chapters_data = json.loads(row["chapters"])
                 chapters = [Chapter(chapter["id"], chapter["name"], chapter["content"], chapter["question"], 
-                                    [Response(resp["text"], resp["valid"]) for resp in chapter["responses"]]) 
+                                    [Response(resp["text"], resp["valid"]) for resp in chapter["reponses"]]) 
                             for chapter in chapters_data]
                 training = Training(row["id"], row["name"], row["field"], row["description"], chapters)
                 trainings.append(training)
@@ -103,7 +116,7 @@ class TrainingManager:
             if row:
                 chapters_data = json.loads(row["chapters"])
                 chapters = [Chapter(chapter["id"], chapter["name"], chapter["content"], chapter["question"], 
-                                    [Response(resp["text"], resp["valid"]) for resp in chapter["responses"]]) 
+                                    [Response(resp["text"], resp["valid"]) for resp in chapter["reponses"]]) 
                             for chapter in chapters_data]
                 return Training(row["id"], row["name"], row["field"], row["description"], chapters)
             return None
