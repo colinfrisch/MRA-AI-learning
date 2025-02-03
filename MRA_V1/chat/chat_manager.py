@@ -38,7 +38,7 @@ tools = [
     {"type": "function",
      "function":{
           "name": "create_training",
-          "description": "Creer un nouveau programme d'apprentissage à partir de la description fournie",
+          "description": "Créer un nouveau programme d'apprentissage à partir de la description fournie",
            "parameters": {
               "type": "object",
               "properties": {
@@ -111,26 +111,29 @@ class ChatManager:
               self.messages.append(assistant_message)
               print(f"call Function name: {function_name} with arguments: {arguments}")
 
-              match function_name:
-                case "get_training_list":
-                    result = json.dumps(self.training_manager.get_all_training_summaries())
-                case "get_all_training_summary_for_field":
-                    result = json.dumps(self.training_manager.get_all_training_summary_for_field(arguments["field"]))
-                case "create_training":
-                    print("...Création d'un programme d'apprentissage avec : ", arguments["subject"])
-                    training = self.training_creator.create_and_add_to_db(arguments["field"], arguments["subject"])
-                    result = json.dumps(training.to_dict())
-                case "subscribe_user_to_training":
-                    user = self.user_manager.get_user_by_name(arguments["name"])
-                    if not user:
-                        print(f"...Creating user {arguments['name']} with phone {arguments['phone']}")
-                        user = self.user_manager.create_user(arguments["name"], arguments["phone"])
-                    print(f"...Subscribe user.id {user.id} to training  {arguments['program_id']}")
-                    self.user_manager.set_current_training(user.id, arguments["program_id"])
-                    result = "Utilisateur inscrit avec succès!"
-                case _:
-                    print("Function not found")
-                    result = "Function not found"
+              if function_name == "get_training_list":
+                  result = json.dumps(self.training_manager.get_all_training_summaries())
+
+              elif function_name == "get_all_training_summary_for_field":
+                  result = json.dumps(self.training_manager.get_all_training_summary_for_field(arguments["field"]))
+
+              elif function_name == "create_training":
+                  print("...Création d'un programme d'apprentissage avec : ", arguments["subject"])
+                  training = self.training_creator.create_and_add_to_db(arguments["field"], arguments["subject"])
+                  result = json.dumps(training.to_dict())
+
+              elif function_name == "subscribe_user_to_training":
+                  user = self.user_manager.get_user_by_name(arguments["name"])
+                  if not user:
+                      print(f"...Creating user {arguments['name']} with phone {arguments['phone']}")
+                      user = self.user_manager.create_user(arguments["name"], arguments["phone"])
+                  print(f"...Subscribe user.id {user.id} to training  {arguments['program_id']}")
+                  self.user_manager.set_current_training(user.id, arguments["program_id"])
+                  result = "Utilisateur inscrit avec succès!"
+                  
+              else:
+                  print("Function not found")
+                  result = "Function not found"
               # Add the function response back to the conversation
               self.messages.append({
                   "role": "tool",

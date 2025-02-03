@@ -1,6 +1,6 @@
-import json, re, toml, threading
+import json, re, toml, threading, itertools
 from openai import OpenAI
-from backend.catalog_manager import *
+from backend.new_catalog_manager import *
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -29,14 +29,15 @@ class TrainingCreator():
             )
         
         #on filtre ce qui'il y a entre les deux balises ```json et ``` dans response.choices[0].message.content
+        #print(response.choices[0].message.content)
         json_content = re.search(r"```json(.*?)```", response.choices[0].message.content, re.DOTALL).group(1).strip()
-        self.training_json = json.loads(json_content)
+        return json.loads(json_content)
         
         
     
     
     
-    def complete_chapter(self,chapter,field):
+    def complete_chapter(self,chapter,field,training_id,subject):
         
         messages=[]
         
@@ -44,6 +45,7 @@ class TrainingCreator():
             content = file.read()
         content=content.replace("[[DOMAINE]]",field)
         content=content.replace("[[NOM_CHAPITRE]]",chapter["name"])
+        content=content.replace("[[SUJET]]",subject)
         messages.append( {"role": "user", "content": content})
         
         response_complete = self.client.chat.completions.create(
@@ -60,36 +62,35 @@ class TrainingCreator():
         chapter["content"] = json.loads(json_content_complete)["content"]
         chapter["question"] = json.loads(json_content_complete)["question"]
         chapter["reponses"] = json.loads(json_content_complete)["responses"]
+        chapter["training_id"] = training_id
 
-        print("chapter completed : ",chapter["name"],' -------------')
-            
-        return chapter
+        self.catalog_manager.add_chapter_to_training(chapter["name"], chapter["content"], chapter["question"], chapter["reponses"], chapter["training_id"])
+        print('chapter added to database : ',chapter["name"])
+        
     
-    def execute_in_parallel(self,chapters,field,subject,training:Training):
+    def execute_in_parallel(self,subject,field,training:Training,training_json):
         with ThreadPoolExecutor() as executor:
-            results = list(executor.map(self.complete_chapter, self.training_json, field))
-            chapters.extend(results)
+            list(executor.map(self.complete_chapter, training_json, field, itertools.repeat(training.id),subject))
+            
             print('done with all chapters')
-            #return self.catalog_manager.create_training(subject, field, 'Un training sur ' + subject, chapters)
-            return self.catalog_manager.modify_chapters(training.id, chapters)
+
+            #return self.catalog_manager.modify_chapters(training.id, chapters)
 
 
 
         
     def create_and_add_to_db(self,field:str,subject:str):
-        training = self.catalog_manager.create_training(subject, field, 'Un training sur ' + subject, []) #Training(db.cursor.lastrowid, name, field, description, chapters)
-        print("Training created and saved to database : len = ",'-------------')
+        training = self.catalog_manager.create_training(subject, field, 'Un training sur ' + subject) #Training(db.cursor.lastrowid, name, field, description, chapters)
+        print("Training created and saved to database ")
 
         #/!\ remplacer les self.training_json par training_json (paramètres plutot que variables d'instance)
-        self.create_training_json(field,subject) #creates json in self.training_json
-
-        
-        chapters = []
-        
-        thread = threading.Thread(target=self.execute_in_parallel, args=(chapters,field,subject,training))
+        training_json = self.create_training_json(field,subject)
+                
+        thread = threading.Thread(target=self.execute_in_parallel, args=(subject,field,training,training_json))
         thread.start()
+        thread.join()
         
-        print('training is being created ... saving ',len(chapters),' chapters to db -------------------------------------')
+        print('Training complete')
 
         
 

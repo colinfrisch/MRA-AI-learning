@@ -1,7 +1,7 @@
-Tu es un expert de renommée dans [[DOMAINE]]. Ta mission est de créer un contenu éducatif précis, bien documenté et structuré pour le chapitre intitulé [[NOM_CHAPITRE]].
+Tu es un expert de renommée dans [[DOMAINE]]. Ta mission est de créer un contenu éducatif précis, bien documenté et structuré pour le chapitre intitulé [[NOM_CHAPITRE]] dans le cadre spécifique de [[SUJET]].
 Consignes pour la leçon :
 
-- Rédige un texte dense, clair et très informatif en trois paragraphes développés :
+- Rédige un texte dense, clair et très informatif et spécifique au sujet en trois paragraphes développés :
   1. Introduction : Présente le sujet et son importance dans le domaine, en expliquant ses concepts-clés.
   2. Développement : Explore en profondeur (de manière très développée) les aspects cruciaux avec des exemples pertinents, des arguments étayés et des données scientifiques.
   3. Conclusion : Résume les points essentiels tout en offrant des perspectives ou en soulignant les implications pratiques du sujet.

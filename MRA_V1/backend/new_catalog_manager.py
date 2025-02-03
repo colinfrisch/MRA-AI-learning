@@ -13,7 +13,6 @@ class Answer:
     def to_dict(self):
         return {"text": self.text, "valid": self.valid}
 
-
 class Chapter:
     def __init__(self, chapter_id: int, name: str, content: str, question: str, answers: list[Answer],training_id:int):
         self.id = chapter_id
@@ -66,7 +65,18 @@ class Training:
         }
 
 
+'''
+Useful functions in TrainingManager:
+- create_training(name: str, field: str, description: str) -> Training
+- add_chapter_to_training(name: str, content: str, question: str, answers: list[dict], training_id: int) -> Chapter
+- get_all_chapters_from_training(training_id: int) -> list[Chapter]
+- get_all_trainings() -> list[Training]
+- get_all_training_summaries() -> list[dict]
+- get_all_training_summary_for_field(field: str) -> list[dict]
+- get_training_by_id(training_id: int) -> Training
+- modify_chapter_section(chapter_id: int,section:str, new_content:str)
 
+'''
 
 class TrainingManager:
     def create_training(self, name: str, field: str, description: str) -> Training:
@@ -74,8 +84,6 @@ class TrainingManager:
         chapters est maintenant une table de la forme (id, name, content, question(json), answer, training_id(fk) )
         chapters est donc ici donné en liste 
         '''
-        
-
 
         with DBConnection() as db:
             
