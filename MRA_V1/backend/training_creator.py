@@ -52,7 +52,6 @@ class TrainingCreator():
             model="gpt-4o-mini",
             messages=messages,
         )
-        #print ("-----------------")
         #print (response_complete.choices[0].message.content)
         
         json_content_complete = re.search(r"```json(.*?)```", response_complete.choices[0].message.content, re.DOTALL).group(1).strip()
