@@ -46,6 +46,8 @@ class TrainingCreator():
         content=content.replace("[[DOMAINE]]",field)
         content=content.replace("[[NOM_CHAPITRE]]",chapter["name"])
         content=content.replace("[[SUJET]]",subject)
+        #print the first two lines of content
+        print(content[:300])
         messages.append( {"role": "user", "content": content})
         
         response_complete = self.client.chat.completions.create(
@@ -69,7 +71,8 @@ class TrainingCreator():
     
     def execute_in_parallel(self,subject,field,training:Training,training_json):
         with ThreadPoolExecutor() as executor:
-            list(executor.map(self.complete_chapter, training_json, field, itertools.repeat(training.id),subject))
+            print('subject : ',subject, 'field : ',field, 'training : ',training)
+            list(executor.map(self.complete_chapter, training_json, itertools.repeat(field), itertools.repeat(training.id),itertools.repeat(subject)))
             
             print('done with all chapters')
 
@@ -82,9 +85,8 @@ class TrainingCreator():
         training = self.catalog_manager.create_training(subject, field, 'Un training sur ' + subject) #Training(db.cursor.lastrowid, name, field, description, chapters)
         print("Training created and saved to database ")
 
-        #/!\ remplacer les self.training_json par training_json (paramètres plutot que variables d'instance)
         training_json = self.create_training_json(field,subject)
-                
+
         thread = threading.Thread(target=self.execute_in_parallel, args=(subject,field,training,training_json))
         thread.start()
         thread.join()
@@ -97,6 +99,6 @@ class TrainingCreator():
 
 def main():
     training_creator = TrainingCreator()
-    training_creator.create_and_add_to_db("Géographie","Singapour")
+    training_creator.create_and_add_to_db("Médecine","Tendinite rotulienne")
 if __name__ == "__main__":
     main()
