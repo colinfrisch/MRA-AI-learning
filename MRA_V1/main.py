@@ -1,4 +1,8 @@
 import streamlit as st
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Configuration de la page
 st.set_page_config(page_title="Application Formation + Chatbot",

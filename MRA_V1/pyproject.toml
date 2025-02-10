@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "MRA"
+version = "0.1.0"
+description = "Application Formation + Chatbot"
+readme = "README.md"
+authors = [
+  "Colin", "Christian"
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+openai = "^1.61.1"
+streamlit = "^1.42.0"
+prisma = "^0.15.0"
+python-dotenv = "^1.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

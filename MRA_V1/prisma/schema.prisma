@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-py"
+  interface = "asyncio"
+  recursive_type_depth = 5
+
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id               Int    @id @default(autoincrement())
+  username         String
+  phone            String
+  current_training String? // Optional field to store JSON as TEXT
+}
+
+model Training {
+  id          Int    @id @default(autoincrement())
+  name        String
+  field       String
+  description String
+  chapters    Chapter[]
+}
+
+model Chapter {
+  id          Int    @id @default(autoincrement())
+  name        String
+  content     String
+  question    String
+  answers     String // Field to store JSON as TEXT
+  training_id Int
+  training    Training @relation(fields: [training_id], references: [id])
+}

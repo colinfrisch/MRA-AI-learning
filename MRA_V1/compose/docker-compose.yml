@@ -1,0 +1,32 @@
+name: data_mra
+
+services:
+  database:
+    image: mysql:latest
+    container_name: mra_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: mra_db
+      MYSQL_USER: local_user
+      MYSQL_PASSWORD: local_password
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - -h
+        - 127.0.0.1
+        - -uroot
+        - -proot_password
+      interval: 1s
+      timeout: 60s
+      retries: 60
+    volumes:
+      - database:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --bind-address=0.0.0.0
+
+volumes:
+  database:

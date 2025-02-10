@@ -1,4 +1,4 @@
-from backend.db import DBConnection
+from prisma import Prisma 
 import json
 
 class CurrentTraining:
@@ -27,75 +27,81 @@ class User:
         return self.current_training
 
 class UserManager:
-    def create_user(self, username, phone):
-        with DBConnection() as db:
-            db.execute("INSERT INTO users (username, phone) VALUES (?, ?)", (username, phone))
-            db.commit()
-        # return the user
-        return User(db.cursor.lastrowid, username, phone, None, None)
+    def __init__(self):
+        self.db = Prisma()
 
-    def get_user(self, user_id) -> User:
-        with DBConnection() as db:
-            db.execute("SELECT * FROM users WHERE id = ?", (user_id,))
-            row = db.fetchone()
-            if row:
-                current_training_data = json.loads(row["current_training"]) if row["current_training"] else {"training_id": "", "chapters_done": []}
-                current_training = CurrentTraining(current_training_data["training_id"], current_training_data["chapters_done"])
-                finished_training = json.loads(row["finished_training"]) if row["finished_training"] else []
-                return User(row["id"], row["username"], row["phone"], current_training, finished_training)
-            return None
+    async def create_user(self, username, phone):
+        user = await self.db.user.create(
+            data={
+                'username': username,
+                'phone': phone,
+                'current_training': None,
+            }
+        )
+        return User(user.id, user.username, user.phone, None, None)
+    
+    async def get_user(self, user_id) -> User:
+        user = await self.db.user.find_unique(where={'id': user_id})
+        if user:
+            current_training_data = json.loads(user.current_training) if user.current_training else {"training_id": "", "chapters_done": []}
+            current_training = CurrentTraining(current_training_data["training_id"], current_training_data["chapters_done"])
+            finished_training = json.loads(user.finished_training) if user.finished_training else []
+            return User(user.id, user.username, user.phone, current_training, finished_training)
+        return None
 
-    def get_user_by_name(self, username) -> User:
-        with DBConnection() as db:
-            db.execute("SELECT * FROM users WHERE username = ?", (username,))
-            row = db.fetchone()
-            if row:
-                current_training_data = json.loads(row["current_training"]) if row["current_training"] else {"training_id": "", "chapters_done": []}
-                current_training = CurrentTraining(current_training_data["training_id"], current_training_data["chapters_done"])
-                finished_training = json.loads(row["finished_training"]) if row["finished_training"] else []
-                return User(row["id"], row["username"], row["phone"], current_training, finished_training)
-            return None
+    async def get_user_by_name(self, username) -> User:
+        user = await self.db.user.find_unique(where={'username': username})
+        if user:
+            current_training_data = json.loads(user.current_training) if user.current_training else {"training_id": "", "chapters_done": []}
+            current_training = CurrentTraining(current_training_data["training_id"], current_training_data["chapters_done"])
+            finished_training = json.loads(user.finished_training) if user.finished_training else []
+            return User(user.id, user.username, user.phone, current_training, finished_training)
+        return None
 
-    def set_current_training(self, user_id, training_id):
-        with DBConnection() as db:
-            current_training = json.dumps({"training_id": training_id, "chapters_done": []})
-            db.execute("UPDATE users SET current_training = ? WHERE id = ?", (current_training, user_id))
-            db.commit()
+    async def set_current_training(self, user_id, training_id):
+        current_training = json.dumps({"training_id": training_id, "chapters_done": []})
+        await self.db.user.update(
+            where={'id': user_id},
+            data={'current_training': current_training}
+        )
 
-    def add_chapter_done(self, user_id, chapter_id):
-        with DBConnection() as db:
-            db.execute("SELECT current_training FROM users WHERE id = ?", (user_id,))
-            row = db.fetchone()
-            if row and row["current_training"]:
-                current_training_data = json.loads(row["current_training"])
-                current_training_data["chapters_done"].append(chapter_id)
-                current_training = json.dumps(current_training_data)
-                db.execute("UPDATE users SET current_training = ? WHERE id = ?", (current_training, user_id))
-                db.commit()
+    async def add_chapter_done(self, user_id, chapter_id):
+        user = await self.db.user.find_unique(where={'id': user_id})
+        if user and user.current_training:
+            current_training_data = json.loads(user.current_training)
+            current_training_data["chapters_done"].append(chapter_id)
+            current_training = json.dumps(current_training_data)
+            await self.db.user.update(
+                where={'id': user_id},
+                data={'current_training': current_training}
+            )
 
-    def set_chapter_finished(self, user_id, chapter_id, success):
-        with DBConnection() as db:
-            db.execute("SELECT current_training FROM users WHERE id = ?", (user_id,))
-            row = db.fetchone()
-            if row and row["current_training"]:
-                current_training_data = json.loads(row["current_training"])
-                current_training_data["chapters_done"].append(chapter_id)
-                current_training = json.dumps(current_training_data)
-                db.execute("UPDATE users SET current_training = ? WHERE id = ?", (current_training, user_id))
-                db.commit()
+    async def set_chapter_finished(self, user_id, chapter_id, success):
+        user = await self.db.user.find_unique(where={'id': user_id})
+        if user and user.current_training:
+            current_training_data = json.loads(user.current_training)
+            current_training_data["chapters_done"].append(chapter_id)
+            current_training = json.dumps(current_training_data)
+            await self.db.user.update(
+                where={'id': user_id},
+                data={'current_training': current_training}
+            )
 
-def main():
+async def main():
     user_manager = UserManager()
-    user_manager.create_user("john_doe", "123-456-7890")
-    user_manager.set_current_training(1, "training_123")
-    user_manager.add_chapter_done(1, "chapter_1")
-    user_manager.add_chapter_done(1, "chapter_2")
-    user = user_manager.get_user(1)
+    await user_manager.db.connect()
+    await user_manager.create_user("john_doe", "123-456-7890")
+    await user_manager.set_current_training(1, "training_123")
+    await user_manager.add_chapter_done(1, "chapter_1")
+    await user_manager.add_chapter_done(1, "chapter_2")
+    user = await user_manager.get_user(1)
     if user:
         print("Username:", user.username)
         print("Phone:", user.phone)
         print("Current Training:", user.get_current_training().__dict__)
         print("Finished Training:", user.get_finished_training())
+    await user_manager.db.disconnect()
 
 if __name__ == "__main__":
-    main()
+    import asyncio
+    asyncio.run(main())
