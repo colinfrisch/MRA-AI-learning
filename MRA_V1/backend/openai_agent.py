@@ -10,16 +10,9 @@ class OpenAIAgent:
             raise ValueError("OPENAI_API_KEY environment variable not set")
         self.client = OpenAI(api_key=api_key)
 
-    def create_completion(self, model: str, messages: list[dict]) -> dict:
-        response = self.client.chat.completions.create(
-            model=model,
-            messages=messages,
-        )
-        return response
-
     def generate_response(self, messages: list[dict], tools: list[dict]) -> dict:
         response = self.client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             messages=messages,
             tools=tools,
         )

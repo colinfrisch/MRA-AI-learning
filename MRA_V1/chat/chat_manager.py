@@ -95,9 +95,9 @@ class ChatManager:
     def get_next_message(self):
         dialog_finished = False
         while not dialog_finished:
-            response = self.openai_agent.create_completion(
-                model="gpt-4o-mini",
-                messages=self.messages
+            response = self.openai_agent.generate_response(
+                messages=self.messages, 
+                tools=tools
             )
             assistant_message = response.choices[0].message
             if 'tool_calls' in assistant_message:
