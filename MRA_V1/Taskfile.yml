@@ -8,7 +8,6 @@ vars:
   MYSQL_CONTAINER: "mra_db"
 
 tasks:
-
   clean:
     desc: "Remove all generated files"
     cmds:
@@ -29,7 +28,7 @@ tasks:
     desc: "Run the Streamlit app"
     cmds:
       - poetry run prisma migrate deploy
-      - poetry run streamlit run main.py
+      - poetry run streamlit run src/main.py
 
   # databse 
 

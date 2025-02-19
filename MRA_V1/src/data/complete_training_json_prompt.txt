@@ -30,6 +30,5 @@ Retourne uniquement le résultat  au format JSON strictement comme indiqué ci-d
     {"text": "Texte de la réponse 4", "valid": "false"},
     {"text": "Texte de la réponse 5", "valid": "false"}
   ]
-
 }
 ```

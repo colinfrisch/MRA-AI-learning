@@ -2,35 +2,25 @@
 Agis comme un expert en [[DOMAINE]] et fais moi 10 leçons à apprendre en 10 jours sur [[SUJET]]. 
 Chaque leçon doit être importante, différente des autres, comporter des exemples nommés et précis. 
 Donne le résultat sous forme d'un json avec le nom de chaque chapitre dans 'name'. 
-Tu dois laisser les champs 'content', 'question' et 'reponses' comlètement vides. 
 Le champ id est le numéro des chapitres (il va donc de 1 à 10).
 Le JSON est de la forme :
 
 ```json
-{
+[
+  {
   "id": "1",
-  "name": "...",
-  "content": "...",
-  "question": "...",
-  "responses": []
-        
+  "name": "...",        
 },
 {
   "id": "2",
   "name": "...",
-  "content": "...",
-  "question": "...",
-  "responses": []
 },
 {
   "id": "3",
   "name": "...",
-  "content": "...",
-  "question": "...",
-  "responses": []
-        
 }
 ...
+]
 ```
 
 renvoie uniquement le json et rien d'autre

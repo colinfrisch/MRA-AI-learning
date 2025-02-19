@@ -1,11 +1,13 @@
 [tool.poetry]
-name = "MRA"
+name = "mra"
 version = "0.1.0"
 description = "Application Formation + Chatbot"
 readme = "README.md"
 authors = [
   "Colin", "Christian"
 ]
+packages = [{include = "*", from="src"}]
+
 
 [tool.poetry.dependencies]
 python = "^3.12"
