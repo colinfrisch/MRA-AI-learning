@@ -1,4 +1,7 @@
-.DS_Store
+**/.streamlit/secrets.toml
+**/*.DS_Store
+**/__pycache__/
+**/*.pyc
 
 *.pyc
 **/supp.ipynb
