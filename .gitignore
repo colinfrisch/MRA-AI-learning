@@ -10,3 +10,4 @@ MRA-training/mydatabase.db-journal
 MRA_V0/.DS_Store
 MRA_V1/.DS_Store
 .gitignore
+MRA_V1/.env

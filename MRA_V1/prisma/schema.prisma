@@ -1,8 +1,7 @@
 generator client {
-  provider = "prisma-client-py"
-  interface = "sync"
+  provider             = "prisma-client-py"
+  interface            = "sync"
   recursive_type_depth = 5
-
 }
 
 datasource db {
@@ -10,28 +9,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id               Int    @id @default(autoincrement())
-  username         String
-  phone            String
-  current_training String? // Optional field to store JSON as TEXT
+  id                 Int        @id @default(autoincrement())
+  username           String
+  phone              String
+  current_chapter_id Int?
+  current_chapter    Chapter?   @relation(fields: [current_chapter_id], references: [id])
+  finished_trainings Training[]
+  evals              Eval[]
 }
 
 model Training {
-  id          Int    @id @default(autoincrement())
-  name        String
-  field       String
-  description String
-  chapters    Chapter[]
+  id           Int       @id @default(autoincrement())
+  name         String
+  field        String
+  description  String
+  chapters     Chapter[]
+  performed_by User[]
 }
 
 model Chapter {
-  id          Int    @id @default(autoincrement())
-  name        String
-  content     String
-  question    String
-  answers     String // Field to store JSON as TEXT
-  training_id Int
-  training    Training @relation(fields: [training_id], references: [id])
+  id             Int      @id @default(autoincrement())
+  chapter_number Int
+  name           String
+  content        String
+  question       String
+  answers        Json
+  training_id    Int
+  training       Training @relation(fields: [training_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users          User[]
+  evals          Eval[]
+}
+
+model Eval {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  user       User     @relation(fields: [user_id], references: [id])
+  chapter_id Int
+  chapter    Chapter  @relation(fields: [chapter_id], references: [id])
+  score      Int
+  timestamp  DateTime @default(now())
 }
