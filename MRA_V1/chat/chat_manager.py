@@ -4,8 +4,8 @@ from backend.training_manager import TrainingManager
 from backend.user_manager import UserManager
 from backend.training_creator import TrainingCreator
 import re
-from chat.openai_agent import OpenAIAgent
-import os
+from backend.openai_agent import OpenAIAgent
+
 
 tools = [
   { "type": "function",
@@ -85,7 +85,6 @@ class ChatManager:
     def __init__(self):
         self.openai_agent = OpenAIAgent()
         self.messages = []
-        print("Current Working Directory:", os.getcwd())
         with open("chat/select_prompt.txt", "r") as file:
             self.messages.append({"role": "system", "content": file.read(), "display": False})
         self.training_manager = TrainingManager()

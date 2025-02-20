@@ -1,7 +1,6 @@
 import streamlit as st
 from backend.user_manager import UserManager
-from backend.catalog_manager import TrainingManager
-
+from backend.training_manager import TrainingManager
 
 def main():
     st.title("Quizz Page")
@@ -12,9 +11,8 @@ def main():
         user_name = st.query_params["user_name"]
     if user_name is None:
         user_name = st.session_state.get("user_name", None)
-
     if user_name is None:
-        st.error("Username not found in URL")
+        st.error("Username not found in URL or session")
         return
     
     user_manager = UserManager()
@@ -23,53 +21,33 @@ def main():
         st.error(f"User '{user_name}' not found")
         return
 
-    current_training = user.get_current_training()
-    if not current_training:
-        st.error("No current training found for the user")
-        return
-    training_manager = TrainingManager()
-    training = training_manager.get_training_by_id(current_training.get_training_id())
-    chapters_done = current_training.get_chapters_done()
-
-     # retrieve user name from URL or from session state or take next chapter
-    chapterId = None
-    next_chapter=None
-    if "ch" in st.query_params:
-        chapterId = st.query_params["ch"]
-    if "ch" in st.session_state:
-        chapterId = st.session_state["ch"]
-    if not chapterId:
-      for chapter in training.get_chapters():
-          if chapter.id not in chapters_done:
-              chapterId = chapter.id
-              break
-          st.session_state["ch"] = chapterId
-
-    for chapter in training.get_chapters():
-      if chapter.id == chapterId:
-          next_chapter = chapter
-
-    if not next_chapter:
+    current_chapter = user.current_chapter
+    if not current_chapter:
         st.success("You have completed all chapters in this training!")
+        st.write("Your score is ", user_manager.get_score_for_user(user))
+        finished_trainings  = user_manager.get_finised_trainings(user)
+        st.write("Training Finished :" )
+        for training in finished_trainings:
+            st.write(training.name+" - "+training.description)
         return
 
-    st.header(f"{next_chapter.name}")
-    st.write(next_chapter.content)
-    st.write(next_chapter.question)
+    st.header(f"{current_chapter.name}")
+    st.write(current_chapter.content)
+    st.write(current_chapter.question)
 
-    selected_response = st.radio("Select your response:", [response.text for response in next_chapter.get_responses()])
+    selected_response = st.radio("Select your response:", [response['text'] for response in current_chapter.answers])
 
     if st.button("Submit"):
         success = False
-        for response in next_chapter.get_responses():
-            if response.text == selected_response:
-                if response.valid:
+        for response in current_chapter.answers:
+            if response['text'] == selected_response:
+                if response['valid']:
                     st.success("Correct answer!")
                     success = True
                 else:
                     st.error("Incorrect answer.")
                 break
-        user_manager.set_chapter_finished(user.id, next_chapter.id, success)
+        user_manager.add_eval_to_current_training_chapter(user, success)
         if st.button("Essayer une autre question"):
             st.switch_page(f"pages/2_Quizz.py")
 

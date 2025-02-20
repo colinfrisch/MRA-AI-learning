@@ -1,5 +1,5 @@
 import json, re, toml, threading, itertools
-from backend.catalog_manager import TrainingManager
+from backend.training_manager import TrainingManager
 from concurrent.futures import ThreadPoolExecutor
 from chat.openai_agent import OpenAIAgent
 from typing import List, Dict
@@ -12,17 +12,18 @@ from prisma.models import Training, Chapter
 
 class TrainingCreator:
     def __init__(self, mock=False):
-        self.openai_agent = OpenAIAgent(mock=mock)
+        self.openai_agent = OpenAIAgent(mock)
         #self.catalog_manager = TrainingManager()
-        self.db = Prisma(log_queries=True)
+        self.db = Prisma(log_queries=False)
         self.db.connect()
-        self.check_trainings()
 
+    # this methods checks that the training have chapters and create a fake training if none in tghe db
     def check_trainings(self):
         # remove trainings with no chapter
         # TODO: fix this
-        self.db.training.delete_many(
-        ) 
+        #self.db.training.delete_many(
+        #    where={'chapters':{''}}
+        #) 
         # intialize a first training if the database is empty
         print('checking if database is empty')
         a_training  =self.db.training.find_first()

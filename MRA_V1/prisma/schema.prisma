@@ -11,7 +11,7 @@ datasource db {
 
 model User {
   id                 Int        @id @default(autoincrement())
-  username           String
+  username           String     @unique
   phone              String
   current_chapter_id Int?
   current_chapter    Chapter?   @relation(fields: [current_chapter_id], references: [id])
@@ -44,9 +44,9 @@ model Chapter {
 model Eval {
   id         Int      @id @default(autoincrement())
   user_id    Int
-  user       User     @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   chapter_id Int
-  chapter    Chapter  @relation(fields: [chapter_id], references: [id])
+  chapter    Chapter  @relation(fields: [chapter_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
   score      Int
   timestamp  DateTime @default(now())
 }

@@ -81,6 +81,6 @@ blah blah
 CHAPTERS_CONTENT="""
 blah
 ```json
-{"content": "Blah Blah Blah","question": "Chat do you think of blah?","responses": [{"text": "Texte de la réponse 1", "valid": "true"},{"text": "Texte de la réponse 2", "valid": "false"},{"text": "Texte de la réponse 3", "valid": "false"},{"text": "Texte de la réponse 4", "valid": "false"},{"text": "Texte de la réponse 5", "valid": "false"}]}
+{"content": "Blah Blah Blah","question": "Chat do you think of blah?","responses": [{"text": "Texte de la réponse 1", "valid": 1},{"text": "Texte de la réponse 2", "valid": 0},{"text": "Texte de la réponse 3", "valid": 0},{"text": "Texte de la réponse 4", "valid": 0},{"text": "Texte de la réponse 5", "valid": 0}]}
 ```
 """

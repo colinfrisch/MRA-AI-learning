@@ -25,16 +25,13 @@
     }
   },
   "prismaERDPreviewer.preferredTheme": "dark",
-  "python.testing.pytestArgs": [
-    "tests"
-  ],
-  "python.testing.unittestEnabled": true,
-  "python.testing.pytestEnabled": false,
   "python.testing.unittestArgs": [
     "-v",
     "-s",
     "./tests",
     "-p",
     "test_*.py"
-  ]
+  ],
+  "python.testing.pytestEnabled": false,
+  "python.testing.unittestEnabled": true,
 }

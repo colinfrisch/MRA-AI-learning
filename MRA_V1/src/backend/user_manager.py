@@ -1,6 +1,7 @@
 import random
+from typing import List
 from prisma import Prisma 
-from prisma.models import User, Chapter
+from prisma.models import User, Chapter, Training
 import json
 
 class UserManager:
@@ -20,13 +21,12 @@ class UserManager:
         return self.db.user.find_unique(where={'id': user_id}, include={'current_chapter':True})
 
     def get_user_by_name(self, username) -> User:
-        return self.db.user.find_unique(where={'username': username})
+        return self.db.user.find_unique(where={'username': username}, include={'current_chapter':True})
 
     # add an eval to the current training chapter
     # and call next_chapter to change the current chapter
     # return the next chapter or None if it was the last chapter and the training is finished
-    def add_eval_to_current_training_chapter(self, user_id, success:bool) -> Chapter:
-        user: User = self.db.user.find_unique(where={'id': user_id}, include={'current_chapter':True})
+    def add_eval_to_current_training_chapter(self, user, success:bool) -> Chapter:
         if not user:
             raise Exception("User not found") 
         if not user.current_chapter:
@@ -34,7 +34,7 @@ class UserManager:
         # save the score in the eval table
         self.db.eval.create(
             data={
-                'user_id': user_id,
+                'user_id': user.id,
                 'chapter_id': user.current_chapter.id,
                 'score': 1 if success else 0
             }
@@ -92,16 +92,14 @@ class UserManager:
             raise Exception("User not found")
         
     # start the training setting up the current_chapter and returning this chapter
-    def start_training(self, user_id, training_id) -> Chapter:
-        user = self.get_user(user_id)
+    def start_training(self, user:User, training:Training) -> Chapter:
         if not user:
             raise Exception("User not found")
-        training = self.db.training.find_unique(where={'id': training_id})
         if not training:
             raise Exception("Training not found")
         # find the first chapter of the training (minimum chapter_number)
         first_chapter = self.db.chapter.find_first(
-            where={'training_id': training_id},
+            where={'training_id': training.id},
             order={'chapter_number': 'asc'}
         )
         if not first_chapter:
@@ -109,40 +107,10 @@ class UserManager:
         # set the current_chapter to the first chapter
         return self.set_current_training_chapter(user, first_chapter)
 
+    def get_score_for_user(self, user:User) -> int:
+        return self.db.eval.group_by(by=['user_id'], where={'user_id':user.id}, sum={'score':True})[0]['_sum']['score']
+
+    def get_finised_trainings(self, user:User) -> List[Training]:
+        return self.db.user.find_first(where={'id':user.id}, include={'finished_trainings':True}).finished_trainings
 
 
-def main():
-    user_manager = UserManager()
-    user  = user_manager.db.user.find_first()
-    if not user:      
-      user = user_manager.create_user("john_doe", "123-456-7890")
-    
-    print("find a traininig")
-    training = user_manager.db.training.find_first(include={'chapters': True})
-    print("training ", training)
-    print("training chapters ", training.chapters)
-
-    user=user_manager.get_user(user.id)
-    print ("user ",user)
-
-    print ("start the training")
-    chapter = user_manager.start_training(user.id, training.id)
-    user=user_manager.get_user(user.id)
-    print ("user ",user)
- 
-    # iterate over the chapters until one is None
-    while chapter:
-        print("The current chapter is ", chapter)
-        success = random.choice([True, False])
-        print(f"add eval {success} to current chapter : ", chapter)
-        chapter = user_manager.add_eval_to_current_training_chapter(user.id, success)
-
-    print("The training is finished")
-    user=user_manager.get_user(user.id)
-    print ("user ",user)
-   
-    user_manager.db.disconnect()
-
-
-if __name__ == "__main__":
-    main()
