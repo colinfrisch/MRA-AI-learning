@@ -1,8 +1,9 @@
 [tool.poetry]
-name = "mra"
+name = "MRA"
 version = "0.1.0"
 description = "Application Formation + Chatbot"
 readme = "README.md"
+
 authors = [
   "Colin", "Christian"
 ]
@@ -11,12 +12,15 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
-openai = "^1.61.1"
 streamlit = "^1.42.0"
+openai = "^1.61.1"
+toml = "^0.10.2"
 prisma = "^0.15.0"
 python-dotenv = "^1.0.1"
 
+
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
 flake8 = "^6.0.0" 
 black = "^23.3.0" 
 
