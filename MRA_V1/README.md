@@ -10,12 +10,19 @@ Tools to install:
 
 - docker >= 27: [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)
   - To run database and infrastructure locally
-- poetry :  https://python-poetry.org/
+- poetry : https://python-poetry.org/
   - for package management and virtual env
 - task: https://taskfile.dev/installation/
   - To centralize all the commands in the Taskfile.yml files
 
+# VSCode extension
 
+VSCode extensions to install:
+
+- pylance
+- autopep
+- Prisma
+-
 
 ## Setup the env
 
@@ -59,4 +66,3 @@ You can also run different parts of the project separately:
 ```
 $ task run-database
 ```
-

@@ -30,6 +30,12 @@ tasks:
       - poetry run prisma migrate deploy
       - poetry run streamlit run src/main.py
 
+  test:
+    desc: "Run tests with pytest"
+    cmds:
+      #- poetry run pytest
+      - PYTHONPATH=src poetry run python -m unittest discover
+
   # databse 
 
   run-database:
@@ -80,7 +86,3 @@ tasks:
     cmds:
       - poetry run prisma migrate deploy
 
- 
-
-
-  #endregion stop tasks
