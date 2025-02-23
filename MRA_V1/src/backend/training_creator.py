@@ -58,22 +58,34 @@ class TrainingCreator:
             print("Chapter created")
         except PrismaError as pe:
             print(pe)
+            print(pe)
 
     def create_all_chapters(
         self, field: str, subject: str, training_json, training: Training
     ):
         print("Creating chapters...")
-        with ThreadPoolExecutor() as executor:
-            for chapter in training_json:
-                print("Creating chapter " + chapter["name"])
-                executor.submit(
-                    self.create_chapter,
-                    field,
-                    subject,
-                    training,
-                    int(chapter["id"]),
-                    chapter["name"],
-                )
+
+        for chapter in training_json:
+            print("Creating chapter " + chapter["name"])
+            self.create_chapter(
+                field,
+                subject,
+                training,
+                int(chapter["id"]),
+                chapter["name"],
+            )
+
+      # with ThreadPoolExecutor() as executor:
+      #     for chapter in training_json:
+      #         print("Creating chapter " + chapter["name"])
+      #         executor.submit(
+      #             self.create_chapter,
+      #             field,
+      #             subject,
+      #             training,
+      #             int(chapter["id"]),
+      #             chapter["name"],
+      #         )
 
     def create_and_add_to_db(self, field: str, subject: str) -> Training:
         print("Creating training...")

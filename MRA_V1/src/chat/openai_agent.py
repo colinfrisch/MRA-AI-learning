@@ -28,7 +28,6 @@ class OpenAIAgent:
             )
 
     # create a training table of content
-
     def create_training_summary(self, field: str, subject: str):
         messages = []
         with open("src/chat/new_training_json_prompt.txt", "r") as file:

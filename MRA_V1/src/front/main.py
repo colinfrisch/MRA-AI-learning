@@ -19,6 +19,7 @@ Utilisez la barre de navigation à gauche pour passer d'une page à l'autre.
 
 if st.button("Premier apprentissage (fake)"):
     username = "john doe"
+    username = "john doe"
     user_manager = UserManager()
     user = user_manager.get_user_by_name(username)
     if not user:
@@ -27,6 +28,12 @@ if st.button("Premier apprentissage (fake)"):
     training_creator = TrainingCreator()
     training_creator.check_trainings()
     training = training_creator.db.training.find_first()
+    if training:
+        user_manager.start_training(user, training)
+        st.session_state["user_name"] = "john doe"
+        st.switch_page(f"pages/2_Quizz.py")
+    else:
+        st.error("No training found")
     if training:
         user_manager.start_training(user, training)
         st.session_state["user_name"] = "john doe"

@@ -1,30 +1,35 @@
 import unittest
 import random
 from unittest.mock import patch
+from unittest.mock import patch
 from backend.training_creator import TrainingCreator
 from backend.user_manager import UserManager
 from prisma import Prisma
-
 from tests.test_training_creator import TestTrainingCreator
-
-test_username = "test_doe"
 
 
 class TestUserManager(unittest.TestCase):
     @patch("backend.training_creator.OpenAIAgent")
     def setUp(self, MockOpenAIAgent):
+        self.test_username = "test_doe"
         self.user_manager = UserManager()
+        self.training_creator = TrainingCreator()
+        # Mock the OpenAIAgent
+        mock_agent = MockOpenAIAgent.return_value
+        TestTrainingCreator.setupMockOpenAIAgent(mock_agent)
         self.training_creator = TrainingCreator()
         # Mock the OpenAIAgent
         mock_agent = MockOpenAIAgent.return_value
         TestTrainingCreator.setupMockOpenAIAgent(mock_agent)
 
     def test_main_simulation(self):
+
         db: Prisma = self.user_manager.db
         # create a user if necessary and cleanup the eval and current chapter
-        user = db.user.find_first(where={"username": test_username})
+        user = db.user.find_first(where={"username": self.test_username})
         if not user:
-            user = self.user_manager.create_user(test_username, "123-456-7890")
+            user = self.user_manager.create_user(
+                self.test_username, "123-456-7890")
         else:
             # remove eval, trainings...
             db.eval.delete_many(where={"user_id": user.id})
@@ -50,7 +55,12 @@ class TestUserManager(unittest.TestCase):
 
             # start the training
             chapter = self.user_manager.start_training(user, training)
-            self.assertIsNotNone(chapter, "Failed to start training: no chapter found")
+            self.assertIsNotNone(
+                chapter, "Failed to start training: no chapter found")
+            # start the training
+            chapter = self.user_manager.start_training(user, training)
+            self.assertIsNotNone(
+                chapter, "Failed to start training: no chapter found")
 
             # iterate over the chapters until one is None
             score = 0
@@ -83,14 +93,16 @@ class TestUserManager(unittest.TestCase):
                 "User still has a current chapter after finishing training",
             )
             self.assertEqual(
-                self.user_manager.get_score_for_user(user), score, "Score don't match"
+                self.user_manager.get_score_for_user(
+                    user), score, "Score don't match"
             )
 
+            # self.assertTrue(self.user_manager.get_finised_trainings(user).index(training))
             # self.assertTrue(self.user_manager.get_finised_trainings(user).index(training))
 
     def tearDown(self):
         db: Prisma = self.user_manager.db
-        user = db.user.find_first(where={"username": test_username})
+        user = db.user.find_first(where={"username": self.test_username})
         if user:
             # remove evals and user
             db.eval.delete_many(where={"user_id": user.id})

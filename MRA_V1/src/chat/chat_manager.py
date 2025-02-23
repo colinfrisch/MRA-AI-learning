@@ -159,6 +159,8 @@ class ChatManager:
                 elif function_name == "subscribe_user_to_training":
                     user = self.user_manager.get_user_by_name(
                         arguments["name"])
+                    user = self.user_manager.get_user_by_name(
+                        arguments["name"])
                     if not user:
                         print(
                             f"...Creating user {arguments['name']} with phone {arguments['phone']}"
@@ -225,6 +227,8 @@ class ChatManager:
         return self.session_finished
 
     def respond_to_user(self, user_message):
+        self.messages.append(
+            {"role": "user", "content": user_message, "display": True})
         self.messages.append(
             {"role": "user", "content": user_message, "display": True})
         return self.get_next_message()

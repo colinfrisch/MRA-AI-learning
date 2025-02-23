@@ -82,20 +82,24 @@ class TestTrainingCreator(unittest.TestCase):
         if training:
             self.assertEqual(training.name, "Tendinite rotulienne")
             self.assertEqual(training.field, "Médecine")
-            self.assertEqual(training.description, "Training sur Tendinite rotulienne")
+            self.assertEqual(training.description,
+                             "Training sur Tendinite rotulienne")
             self.assertIsNotNone(training.chapters)
             if training.chapters:
                 self.assertEqual(len(training.chapters), 3)
+                print(training.chapters)
                 self.assertEqual(training.chapters[0].name, "Tendinite")
                 self.assertEqual(training.chapters[1].name, "Genou")
-                self.assertEqual(training.chapters[2].name, "Tendinite au genou")
+                self.assertEqual(
+                    training.chapters[2].name, "Tendinite au genou")
                 self.assertEqual(training.chapters[0].training_id, training.id)
                 self.assertEqual(training.chapters[1].training_id, training.id)
                 self.assertEqual(training.chapters[2].training_id, training.id)
                 self.assertEqual(training.chapters[0].chapter_number, 1)
                 self.assertEqual(training.chapters[1].chapter_number, 2)
                 self.assertEqual(training.chapters[2].chapter_number, 3)
-                self.assertEqual(training.chapters[0].content, "Blah Blah Blah")
+                self.assertEqual(
+                    training.chapters[0].content, "Blah Blah Blah")
                 self.assertEqual(
                     training.chapters[0].question, "Chat do you think of blah?"
                 )
@@ -126,7 +130,8 @@ class TestTrainingCreator(unittest.TestCase):
             self.assertEqual(training.field, field)
 
             # Check that chapters have been created
-            chapters = self.db.chapter.find_many(where={"training_id": training.id})
+            chapters = self.db.chapter.find_many(
+                where={"training_id": training.id})
             self.assertEqual(len(chapters), 3)
 
 

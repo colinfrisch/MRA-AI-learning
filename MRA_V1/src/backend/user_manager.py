@@ -1,6 +1,8 @@
 import random
 from typing import List, Optional
 from prisma import Prisma
+from typing import List, Optional
+from prisma import Prisma
 from prisma.models import User, Chapter, Training
 from prisma.types import TrainingWhereUniqueInput
 import json
@@ -36,6 +38,7 @@ class UserManager:
         self, user, success: bool
     ) -> Optional[Chapter]:
         if not user:
+            raise Exception("User not found")
             raise Exception("User not found")
         if not user.current_chapter:
             raise Exception("User has no current chapter")
@@ -113,6 +116,7 @@ class UserManager:
             raise Exception("User not found")
 
     # start the training setting up the current_chapter and returning this chapter
+
     def start_training(self, user: User, training: Training) -> Chapter:
         if not user:
             raise Exception("User not found")

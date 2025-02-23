@@ -28,6 +28,8 @@ def main():
         st.write("Your score is ", user_manager.get_score_for_user(user))
         finished_trainings = user_manager.get_finised_trainings(user)
         st.write("Training Finished :")
+        finished_trainings = user_manager.get_finised_trainings(user)
+        st.write("Training Finished :")
         for training in finished_trainings:
             st.write(training.name + " - " + training.description)
         return
