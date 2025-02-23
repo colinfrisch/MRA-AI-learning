@@ -32,8 +32,8 @@ model Chapter {
   id             Int      @id @default(autoincrement())
   chapter_number Int
   name           String
-  content        String
-  question       String
+  content        String   @db.LongText
+  question       String   @db.LongText
   answers        Json
   training_id    Int
   training       Training @relation(fields: [training_id], references: [id], onDelete: Cascade, onUpdate: Cascade)

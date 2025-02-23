@@ -18,13 +18,16 @@
     "editor.formatOnSave": true
   },
   "[python]": {
-    "editor.defaultFormatter": "ms-python.python",
+    "editor.defaultFormatter": "ms-python.autopep8",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
       "source.organizeImports.ruff": "explicit"
     }
   },
+  "python.languageServer": "Pylance",
+  "python.analysis.typeCheckingMode": "standard",
   "prismaERDPreviewer.preferredTheme": "dark",
+  "python.envFile": "${workspaceFolder}/.env",
   "python.testing.unittestArgs": [
     "-v",
     "-s",

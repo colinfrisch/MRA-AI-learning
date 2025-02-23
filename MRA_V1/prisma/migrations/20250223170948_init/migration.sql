@@ -24,8 +24,8 @@ CREATE TABLE `Chapter` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `chapter_number` INTEGER NOT NULL,
     `name` VARCHAR(191) NOT NULL,
-    `content` VARCHAR(191) NOT NULL,
-    `question` VARCHAR(191) NOT NULL,
+    `content` LONGTEXT NOT NULL,
+    `question` LONGTEXT NOT NULL,
     `answers` JSON NOT NULL,
     `training_id` INTEGER NOT NULL,
 
@@ -62,7 +62,7 @@ ALTER TABLE `Chapter` ADD CONSTRAINT `Chapter_training_id_fkey` FOREIGN KEY (`tr
 ALTER TABLE `Eval` ADD CONSTRAINT `Eval_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Eval` ADD CONSTRAINT `Eval_chapter_id_fkey` FOREIGN KEY (`chapter_id`) REFERENCES `Chapter`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Eval` ADD CONSTRAINT `Eval_chapter_id_fkey` FOREIGN KEY (`chapter_id`) REFERENCES `Chapter`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE `_TrainingToUser` ADD CONSTRAINT `_TrainingToUser_A_fkey` FOREIGN KEY (`A`) REFERENCES `Training`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

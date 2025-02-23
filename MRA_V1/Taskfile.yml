@@ -6,37 +6,43 @@ vars:
   MYSQL_PASSWORD: "local_password"
   MYSQL_DATABASE: "mra_db"
   MYSQL_CONTAINER: "mra_db"
-
 tasks:
   clean:
-    desc: "Remove all generated files"
+    desc: "Remove generated files but keep poetry.lock"
     cmds:
-      - if [ -f "poetry.lock" ]; then rm poetry.lock; fi
       - rm -fr .venv
-      - poetry run pip install prisma
 
   init:
     desc: "Setup project with Poetry, Prisma, and MySQL"
     cmds:
-      - task create-env-file
+      - task: create-env-file
       - poetry install
-      - task prisma-generate
-      - task run-database
-      - poetry run prisma migrate deploy
-   
+      - task: prisma-generate
+      - task: run-database
+      - PYTHONPATH=src poetry run prisma migrate deploy
+
   run:
     desc: "Run the Streamlit app"
     cmds:
       - poetry run prisma migrate deploy
-      - poetry run streamlit run src/main.py
+      - PYTHONPATH=src poetry run streamlit run src/front/main.py
 
-  # databse 
+  test:
+    desc: "Run tests with unittest"
+    cmds:
+      - PYTHONPATH=src poetry run python -m unittest discover
+
+  test-coverage:
+    desc: "Run tests with coverage reporting"
+    cmds:
+      - PYTHONPATH=src poetry run coverage run -m unittest discover
+      - poetry run coverage report
 
   run-database:
     desc: "Start MySQL database with Docker Compose"
     dir: ./compose
     cmds:
-      - docker compose up -d  --wait
+      - docker compose up -d --wait
 
   stop-database:
     desc: "Stop and remove MySQL database container"
@@ -47,40 +53,46 @@ tasks:
   mysql-prompt:
     desc: "Open MySQL prompt inside Docker container"
     cmds:
-      - docker exec -it {{.MYSQL_CONTAINER}}  mysql -h127.0.0.1 -u{{.MYSQL_USER}} -p{{.MYSQL_PASSWORD}} {{.MYSQL_DATABASE}}
+      - docker exec -it {{.MYSQL_CONTAINER}} mysql -h127.0.0.1 -u{{.MYSQL_USER}} -p{{.MYSQL_PASSWORD}} {{.MYSQL_DATABASE}}
 
   create-env-file:
-    desc: Create the .env file (Copy the .env.local file to .env, only if .env does not exist)
+    desc: "Create the .env file if it does not exist"
     cmds:
-      - cp .env.local .env
-      - echo "DATABASE_URL=\"mysql://{{.MYSQL_USER}}:{{.MYSQL_PASSWORD}}@127.0.0.1:{{.MYSQL_PORT}}/{{.MYSQL_DATABASE}}\"" >> .env
-      - echo "You need to setup your OPENAI_API_KEY key in the .env file"
+      - |
+        if [ ! -f .env ]; then
+          cp .env.local .env
+          echo "DATABASE_URL=\"mysql://{{.MYSQL_USER}}:{{.MYSQL_PASSWORD}}@127.0.0.1:{{.MYSQL_PORT}}/{{.MYSQL_DATABASE}}\"" >> .env
+          echo "Please set your OPENAI_API_KEY in the .env file"
+        fi
     status:
       - test -f .env
 
-# Prisma tasks
-
   prisma-create-migration:
-    desc: Create a new Prisma migration, please provide name=<migration-name>, see https://www.prisma.io/docs/orm/prisma-migrate/getting-started
+    desc: "Create a new Prisma migration, please provide name=<migration-name>"
     cmds:
       - poetry run prisma migrate dev --name {{.name}}
 
   prisma-generate:
-    desc: Generate Prisma client, see https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/generating-prisma-client
+    desc: "Generate Prisma client"
     cmds:
       - poetry run prisma generate --no-hints
 
   prisma-seed:
-    desc: Seed the database, see https://www.prisma.io/docs/orm/prisma-migrate/workflows/seeding
+    desc: "Seed the database"
     cmds:
       - poetry run prisma db seed
 
   prisma-deploy:
-    desc: Deploy Prisma migrations, see https://www.prisma.io/docs/orm/prisma-client/deployment/deploy-database-changes-with-prisma-migrate
+    desc: "Deploy Prisma migrations"
     cmds:
       - poetry run prisma migrate deploy
 
- 
+  lint:
+    desc: "Lint the codebase"
+    cmds:
+      - poetry run flake8 src tests
 
-
-  #endregion stop tasks
+  format:
+    desc: "Format the codebase"
+    cmds:
+      - poetry run black src tests

@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
   "Colin", "Christian"
 ]
-packages = [{include = "*", from="src"}]
+packages = [{include = "src"}]
 
 
 [tool.poetry.dependencies]
@@ -15,7 +15,10 @@ openai = "^1.61.1"
 streamlit = "^1.42.0"
 prisma = "^0.15.0"
 python-dotenv = "^1.0.1"
-pytest = "^8.3.4"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^6.0.0" 
+black = "^23.3.0" 
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

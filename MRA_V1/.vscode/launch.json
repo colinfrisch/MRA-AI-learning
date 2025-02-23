@@ -7,7 +7,6 @@
       "request": "launch",
       "program": "${file}",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/src"
     },
     {
       "name": "Streamlilt",
@@ -16,10 +15,12 @@
       "module": "streamlit",
       "args": [
         "run",
-        "front/main.py"
+        "src/front/main.py"
       ],
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/src"
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      }
     }
   ]
 }
