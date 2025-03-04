@@ -1,5 +1,7 @@
 **/.streamlit/secrets.toml
-**/*.DS_Store
+/.DS_Store
+
+poetry.lock
 **/__pycache__/
 **/*.pyc
 
