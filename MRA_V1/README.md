@@ -1,5 +1,6 @@
 # MRA Setup
 
+
 # Folder structure
 
 - `prisma/`: contains the prisma schema and migration files
