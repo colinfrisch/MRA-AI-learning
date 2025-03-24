@@ -33,4 +33,4 @@ Le JSON est de la forme :
 ...
 ```
 
-renvoie uniquement le json et rien d'autre
+renvoie uniquement le json et rien d'autre.
