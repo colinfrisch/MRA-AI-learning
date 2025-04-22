@@ -1,14 +1,15 @@
-**/.streamlit/secrets.toml
-/.DS_Store
-
-poetry.lock
+#folders 
 **/__pycache__/
-**/*.pyc
 
-*.pyc
-**/supp.ipynb
+#extensions
+**.streamlit
+**.DS_Store
+**.lock
+**.env
+**.pyc
+
+# Local files and secrets
 MRA-training/mydatabase.db
 MRA-training/.streamlit/secrets.toml
 MRA-training/mydatabase.db-journal
-*/.DS_Store
-MRA_V1/.env
+supp.ipynb
