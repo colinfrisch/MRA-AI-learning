@@ -9,9 +9,15 @@ import json
 
 
 class UserManager:
+    """
+    UserManager is a class that manages the user data in the database.
+    It provides methods to create, update, and retrieve user data as well
+    as methods to manage the user's training progress.
+    """
     def __init__(self):
         self.db = Prisma(log_queries=False)
         self.db.connect()
+
 
     def create_user(self, username, phone) -> User:
         return self.db.user.create(
@@ -21,25 +27,31 @@ class UserManager:
             }
         )
 
+
     def get_user(self, user_id) -> User | None:
         return self.db.user.find_unique(
             where={"id": user_id}, include={"current_chapter": True}
         )
+
 
     def get_user_by_name(self, username) -> User | None:
         return self.db.user.find_unique(
             where={"username": username}, include={"current_chapter": True}
         )
 
-    # add an eval to the current training chapter
-    # and call next_chapter to change the current chapter
-    # return the next chapter or None if it was the last chapter and the training is finished
+
     def add_eval_to_current_training_chapter(
         self, user, success: bool
     ) -> Optional[Chapter]:
+        """
+        add an eval to the current training chapter
+        and call next_chapter to change the current chapter
+        return the next chapter or None if it was the last chapter and the training is finished
+        """
+        
         if not user:
             raise Exception("User not found")
-            raise Exception("User not found")
+
         if not user.current_chapter:
             raise Exception("User has no current chapter")
         # save the score in the eval table
@@ -52,9 +64,13 @@ class UserManager:
         )
         return self.next_chapter(user)
 
-    # set the current chapter to the next one or finish the training
-    # return the next chapter or None if it was the last chapter and the training is finished
+
     def next_chapter(self, user: User) -> Optional[Chapter]:
+        """
+        set the current chapter to the next one or finish the training
+        return the next chapter or None if it was the last chapter and the training is finished
+        """
+
         # get the next
         if not user:
             raise Exception("User not found")
@@ -79,17 +95,23 @@ class UserManager:
         )
         return next_chapter
 
-    # set the current training chapter and return this chapter
+
     def set_current_training_chapter(self, user: User, chapter: Chapter) -> Chapter:
+        """
+        set the current chapter to the given chapter
+        """
         self.db.user.update(
             where={"id": user.id},
             data={"current_chapter": {"connect": {"id": chapter.id}}},
         )
         return chapter
 
-    # remove the current_chapter (training is finished)
-    # add the training to the finished_trainings
+
     def finish_current_training(self, user: User, training_id):
+        """
+        remove the current_chapter (training is finished)
+        add the training to the finished_trainings
+        """
         # remove the current_chapter (training is finished)
         self.db.user.update(
             where={"id": user.id}, data={"current_chapter": {"disconnect": True}}
@@ -115,9 +137,12 @@ class UserManager:
         if not user:
             raise Exception("User not found")
 
-    # start the training setting up the current_chapter and returning this chapter
 
     def start_training(self, user: User, training: Training) -> Chapter:
+        """
+        set the current_chapter to the first chapter of the training
+        """
+
         if not user:
             raise Exception("User not found")
         if not training:
@@ -131,6 +156,7 @@ class UserManager:
         # set the current_chapter to the first chapter
         return self.set_current_training_chapter(user, first_chapter)
 
+
     def get_score_for_user(self, user: User) -> int:
         result = self.db.eval.group_by(
             by=["user_id"], where={"user_id": user.id}, sum={"score": True}
@@ -138,6 +164,7 @@ class UserManager:
         if result and "_sum" in result[0] and "score" in result[0]["_sum"]:
             return result[0]["_sum"]["score"]
         return 0
+
 
     def get_finised_trainings(self, user: User) -> List[Training]:
         user_with_trainings = self.db.user.find_first(
