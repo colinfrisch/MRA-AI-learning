@@ -21,13 +21,12 @@ def handle_message():
     processed. If the incoming payload is not a recognized WhatsApp event,
     an error is returned.
 
-    Every message send will trigger 4 HTTP requests to your webhook: message, sent, delivered, read.
+    Every message send will trigger 4 HTTP requests to the webhook: message, sent, delivered, read.
 
     Returns:
         response: A tuple containing a JSON response and an HTTP status code.
     """
     body = request.get_json()
-    # logging.info(f"request body: {body}")
 
     # Check if it's a WhatsApp status update
     if (

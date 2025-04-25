@@ -2,9 +2,9 @@ import logging
 from flask import current_app, jsonify
 import json
 import requests
-
-# from app.services.openai_service import generate_response
 import re
+
+from whatsapp_manager import WhatsappManager
 
 
 def log_http_response(response):
@@ -27,7 +27,8 @@ def get_text_message_input(recipient, text):
 
 def generate_response(response):
     # Return text in uppercase
-    return response.upper()
+    #return response.upper()
+    return "WAYAYAYAYAYOOOOOoo"
 
 
 def send_message(data):
@@ -75,7 +76,7 @@ def process_text_for_whatsapp(text):
     return whatsapp_style_text
 
 
-def process_whatsapp_message(body):
+"""def process_whatsapp_message(body):
     wa_id = body["entry"][0]["changes"][0]["value"]["contacts"][0]["wa_id"]
     name = body["entry"][0]["changes"][0]["value"]["contacts"][0]["profile"]["name"]
 
@@ -85,13 +86,31 @@ def process_whatsapp_message(body):
     # TODO: implement custom function here
     response = generate_response(message_body)
 
-    # OpenAI Integration
-    # response = generate_response(message_body, wa_id, name)
-    # response = process_text_for_whatsapp(response)
-
     data = get_text_message_input(current_app.config["RECIPIENT_WAID"], response)
     send_message(data)
+"""
 
+USER_STORE = {}  # naïve; replace with real DB if you care about persistence
+
+def process_whatsapp_message(body):
+    wa_id   = body["entry"][0]["changes"][0]["value"]["contacts"][0]["wa_id"]
+    text_in = body["entry"][0]["changes"][0]["value"]["messages"][0]["text"]["body"]
+
+    # --- get or create the helper for this user ---
+    bot = USER_STORE.get(wa_id)
+    if bot is None:
+        bot = WhatsappManager(
+            wa_id,
+            access_token=current_app.config["ACCESS_TOKEN"],
+            phone_number_id=current_app.config["PHONE_NUMBER_ID"],
+            api_version=current_app.config["VERSION"],
+        )
+        USER_STORE[wa_id] = bot
+
+    # --- handle the message ---
+    bot.record_incoming(text_in)
+    reply = generate_response(text_in)  # your own logic
+    bot.send_message(reply)
 
 def is_valid_whatsapp_message(body):
     """
