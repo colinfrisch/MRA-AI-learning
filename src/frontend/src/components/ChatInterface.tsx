@@ -1,45 +1,35 @@
-import { FormEvent, useRef, useState } from 'react';
+//import { FormEvent, useEffect, useRef, 
+import { useState } from 'react';
 import styles from './ChatInterface.module.css';
+// import axios from 'axios';
 
 function ChatInterface() {
-    const [messages, setMessages] = useState<string[]>([]);
+    const [isExpanded, setIsExpanded] = useState(false);
 
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const userMessage = inputRef.current?.value.trim();
-        if (!userMessage) return;
-    
-        setMessages(prev => [...prev, userMessage]);
-    
-        if (inputRef.current) {
-            inputRef.current.value = '';
-        }
+    const toggleChat = () => {
+        setIsExpanded(!isExpanded);
     };
-    
 
     return (
-        
-        <div className={styles.chatInterface}>
-            <div className={styles.chatLog}>
-            {messages.map((msg, i) => (
-                <div key={i} className={styles.chatMessage}>
-                {msg}
-                </div>
-            ))}
+        <div className={`${styles.chatInterface} ${isExpanded ? styles.expanded : styles.collapsed}`}>
+            <div className={styles.chatToggle} onClick={toggleChat}>
+                {isExpanded ? 'Hide Chat' : 'Open Chat'}
             </div>
-            <form onSubmit={handleSubmit} className={styles.chatForm}>
-                <input 
-                    ref={inputRef}
-                    type="text" 
-                    placeholder="Chat with MRA"
-                    className={styles.messageInput}
-                    required 
-                />
-                <button type="submit" className={styles.sendButton}>Send</button>
-            </form>
-            
+            {isExpanded && (
+                <>
+                    <div className={styles.chatLog}>
+                    </div>
+                    <form className={styles.chatForm}>
+                        <input 
+                            type="text" 
+                            placeholder="Chat with MRA"
+                            className={styles.messageInput}
+                            required 
+                        />
+                        <button type="submit" className={styles.sendButton}>Send</button>
+                    </form>
+                </>
+            )}
         </div>
     );
 }
