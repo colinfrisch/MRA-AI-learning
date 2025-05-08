@@ -51,6 +51,9 @@ def get_training():
     return jsonify(all_trainings)
 
 
+
+
+
 logged_user = None # Placeholder for logged-in user
 
 @app.route('/login', methods=['POST'])

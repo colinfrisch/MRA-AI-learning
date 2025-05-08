@@ -9,16 +9,20 @@ export function Trainings() {
     return (
         <div className={styles["trainings-page"]}>
             <h1>Trainings</h1>
-            {isLoggedIn && username && <p>Welcome, {username}!</p>}
+            {isLoggedIn && username && (
+                <>
+                    <p>Welcome, {username}!</p>
+                    
+                    {/* Current training - only shown when logged in */}
+                    <TrainingList 
+                        title="Current Training" 
+                        endpoint="http://localhost:8080/training"
+                        field="Sailing"
+                    />
+                </>
+            )}
             
-            {/* Current training */}
-            <TrainingList 
-                title="Current Training" 
-                endpoint="http://localhost:8080/training"
-                field="Sailing"
-            />
-            
-            {/* All trainings */}
+            {/* All trainings - always visible */}
             <TrainingList 
                 title="All Trainings" 
                 endpoint="http://localhost:8080/training"
