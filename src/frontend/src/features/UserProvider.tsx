@@ -5,6 +5,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [username, setUsername] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [inputUsername, setInputUsername] = useState("");
+  const [phone, setPhone] = useState<string | null>(null);
 
   return (
     <UserContext.Provider value={{ 
@@ -13,7 +14,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       isLoggedIn, 
       setIsLoggedIn,
       inputUsername,
-      setInputUsername
+      setInputUsername,
+      phone,
+      setPhone
     }}>
       {children}
     </UserContext.Provider>

@@ -20,11 +20,25 @@ class UserManager:
 
 
     def create_user(self, username, phone) -> User:
-        return self.db.user.create(
-            data={
-                "username": username,
-                "phone": phone,
-            }
+        try:
+            return self.db.user.create(
+                data={
+                    "username": username,
+                    "phone": phone,
+                }
+            )
+        except Exception as e:
+            if "Unique constraint failed" in str(e):
+                if "phone" in str(e):
+                    raise ValueError("Phone number already in use")
+                elif "username" in str(e):
+                    raise ValueError("Username already in use")
+            raise e
+
+
+    def get_user_by_phone(self, phone: str) -> User | None:
+        return self.db.user.find_first(
+            where={"phone": phone}, include={"current_chapter": True}
         )
 
 

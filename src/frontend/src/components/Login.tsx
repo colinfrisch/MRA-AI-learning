@@ -5,23 +5,33 @@ import { useUser } from '../features/UserContext';
 
 export function Login() {
   const { 
-    setUsername, 
+    setUsername,
+    isLoggedIn, 
     setIsLoggedIn, 
     inputUsername, 
     setInputUsername,
-    isLoggedIn 
+    phone,
+    setPhone
   } = useUser();
+
+  const [error, setError] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     try {
-      const response = await axios.post('http://localhost:8080/login', { username: inputUsername });
+      const response = await axios.post('http://localhost:8080/login', { 
+        username: inputUsername,
+        phone: phone
+      });
       console.log('Login success:', response.data);
-      // Only set the username and logged in state after successful login
-      setUsername(inputUsername);
+      // Set all user data from response
+      setUsername(response.data.username);
+      setPhone(response.data.phone);
       setIsLoggedIn(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
+      setError(error.response?.data?.error || 'Login failed');
     }
   };
 
@@ -29,6 +39,8 @@ export function Login() {
     setUsername(null);
     setIsLoggedIn(false);
     setInputUsername('');
+    setPhone(null);
+    setError('');
   };
 
   if (isLoggedIn) {
@@ -49,6 +61,14 @@ export function Login() {
           placeholder="Enter username"
           className={styles.input}
         />
+        <input 
+          type="tel" 
+          value={phone || ''}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="Enter phone number"
+          className={styles.input}
+        />
+        {error && <div className={styles.error}>{error}</div>}
         <button type="submit" className={styles.button}>Login</button>
       </form>
     </div>

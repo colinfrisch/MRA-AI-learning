@@ -7,6 +7,8 @@ type UserContextType = {
   setIsLoggedIn: (isLoggedIn: boolean) => void;
   inputUsername: string;
   setInputUsername: (username: string) => void;
+  phone: string | null;
+  setPhone: (phone: string | null) => void;
 };
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);

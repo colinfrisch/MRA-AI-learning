@@ -12,7 +12,7 @@ datasource db {
 model User {
   id                 Int        @id @default(autoincrement())
   username           String     @unique
-  phone              String
+  phone              String     @unique
   current_chapter_id Int?
   current_chapter    Chapter?   @relation(fields: [current_chapter_id], references: [id])
   finished_trainings Training[]

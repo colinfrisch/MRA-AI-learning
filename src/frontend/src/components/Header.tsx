@@ -9,6 +9,7 @@ function Header() {
             <div className={styles.toolbar}>
                 <button className={styles.button} onClick={() => navigate('/')}>HOME</button>
                 <button className={styles.button} onClick={() => navigate('/trainings')}>TRAININGS</button>
+                <button className={styles.button} onClick={() => navigate('/findtraining')}>FIND TRAINING</button>
             </div>
             <Login />
 
