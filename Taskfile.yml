@@ -11,21 +11,40 @@ tasks:
     desc: "Remove generated files but keep poetry.lock"
     cmds:
       - rm -fr .venv
+      - rm -fr src/frontend/node_modules
 
   init:
-    desc: "Setup project with Poetry, Prisma, and MySQL"
+    desc: "Setup complete project with both backend and frontend"
     cmds:
       - task: create-env-file
       - poetry install
       - task: prisma-generate
       - task: run-database
       - PYTHONPATH=src poetry run prisma migrate deploy
+      - task: setup-frontend
+
+  setup-frontend:
+    desc: "Install frontend dependencies"
+    dir: ./src/frontend
+    cmds:
+      - npm install
+
+  run-frontend:
+    desc: "Run the React frontend"
+    dir: ./src/frontend
+    cmds:
+      - npm start
+
+  run-backend:
+    desc: "Run the Flask backend server"
+    cmds:
+      - PYTHONPATH=src poetry run python src/server/main.py
 
   run:
-    desc: "Run the Streamlit app"
+    desc: "Run both frontend and backend"
     cmds:
-      - poetry run prisma migrate deploy
-      - PYTHONPATH=src poetry run streamlit run src/front/main.py
+      - task: run-database
+      - task: run-backend & task: run-frontend
 
   test:
     desc: "Run tests with unittest"

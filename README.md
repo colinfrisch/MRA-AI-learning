@@ -1,68 +1,110 @@
-# MRA Setup
+# MRA (My React App)
 
-# Folder structure
+This project consists of a React frontend and a Flask backend with a MySQL database.
 
-- `prisma/`: contains the prisma schema and migration files
+## Prerequisites
 
-# Prerequisites
+Before you begin, ensure you have the following installed:
 
-Tools to install:
+- [Docker](https://docs.docker.com/get-docker/) >= 27.0
+  - Required for running the database locally
+- [Poetry](https://python-poetry.org/docs/#installation)
+  - For Python package management
+- [Task](https://taskfile.dev/installation/)
+  - For running project commands
+- [Node.js and npm](https://nodejs.org/) (LTS version recommended)
+  - For running the frontend
 
-- docker >= 27: [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)
-  - To run database and infrastructure locally
-- poetry : https://python-poetry.org/
-  - for package management and virtual env
-- task: https://taskfile.dev/installation/
-  - To centralize all the commands in the Taskfile.yml files
+## Project Structure
 
-# VSCode extension
+- `src/frontend/`: React frontend application
+- `src/server/`: Flask backend server
+- `prisma/`: Database schema and migrations
+- `compose/`: Docker compose files for local development
 
-VSCode extensions to install:
+## First-Time Setup
 
-- pylance
-- autopep
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd MRA
+   ```
+
+2. Initialize the project (this will set up both frontend and backend):
+   ```bash
+   task init
+   ```
+   This command will:
+   - Create necessary environment files
+   - Install Python dependencies
+   - Set up the database
+   - Install frontend dependencies
+
+3. Create a `.env` file (if not created automatically) with:
+   ```
+   DATABASE_URL="mysql://local_user:local_password@127.0.0.1:3306/mra_db"
+   ```
+
+## Running the Application
+
+1. Start both frontend and backend:
+   ```bash
+   task run
+   ```
+
+   This will start:
+   - MySQL database in Docker
+   - Flask backend server on port 8080
+   - React frontend on port 3000
+
+2. Or run components separately:
+   ```bash
+   # Run just the database
+   task run-database
+   
+   # Run just the backend
+   task run-backend
+   
+   # Run just the frontend
+   task run-frontend
+   ```
+
+## Development Commands
+
+- Clean the environment:
+  ```bash
+  task clean
+  ```
+
+- Run tests:
+  ```bash
+  task test
+  ```
+
+- Database commands:
+  ```bash
+  task prisma-generate     # Generate Prisma client
+  task prisma-deploy      # Deploy migrations
+  task mysql-prompt      # Open MySQL prompt
+  ```
+
+## Troubleshooting
+
+1. If the database connection fails:
+   - Ensure Docker is running
+   - Check if the database container is up with `docker ps`
+   - Try restarting the database: `task stop-database && task run-database`
+
+2. If frontend dependencies are missing:
+   - Run `task setup-frontend`
+
+3. If backend dependencies are missing:
+   - Run `poetry install`
+
+## Contributing
+
+Please ensure you have installed the recommended VSCode extensions:
+- Pylance
 - Prisma
--
-
-## Setup the env
-
-To install all the dependencies and setup the local project please run the following command:
-
-```
-$ task init
-```
-
-## Run the app
-
-To start the whole project locally, please run the following command:
-
-```
-$ task run
-```
-
-It will:
-
-- run, migrate and seed the database
-- run the streamlit app
-
-## Run the app
-
-To cleanup the env,
-
-```
-$ task clean
-```
-
-You can also launch multiple goals
-
-```
-$ task clean init
-```
-
-## others
-
-You can also run different parts of the project separately:
-
-```
-$ task run-database
-```
+- ESLint
+- Prettier
