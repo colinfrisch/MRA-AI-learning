@@ -1,0 +1,27 @@
+version: '3'
+
+tasks:
+  init:
+    desc: "Init frontend dependencies"
+    cmds:
+      - npm install
+
+  run:
+    desc: "Run the React frontend"
+    cmds:
+      - npm start
+
+  build:
+    desc: "Build the React frontend for production"
+    cmds:
+      - npm run build
+
+  lint:
+    desc: "Lint the frontend codebase"
+    cmds:
+      - npm run lint
+
+  test:
+    desc: "Run frontend tests"
+    cmds:
+      - npm test

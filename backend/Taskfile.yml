@@ -1,0 +1,62 @@
+version: '3'
+
+tasks:
+  install:
+    desc: "Install backend dependencies using Poetry"
+    cmds:
+      - poetry install
+
+  run:
+    desc: "Run the Flask backend server"
+    cmds:
+      - PYTHONPATH=src poetry run python src/server/main.py
+
+  test:
+    desc: "Run backend tests"
+    cmds:
+      - PYTHONPATH=src poetry run python -m unittest discover
+
+  lint:
+    desc: "Lint the backend codebase"
+    cmds:
+      - poetry run flake8 src tests
+
+  format:
+    desc: "Format the backend codebase"
+    cmds:
+      - poetry run black src tests
+
+  prisma-generate:
+    desc: "Generate Prisma client"
+    cmds:
+      - poetry run prisma generate --no-hints
+
+  prisma-deploy:
+    desc: "Deploy Prisma migrations"
+    cmds:
+      - poetry run prisma migrate deploy
+
+  prisma-create-migration:
+    desc: "Create a new Prisma migration, please provide name=<migration-name>"
+    cmds:
+      - poetry run prisma migrate dev --name {{.name}}
+
+  prisma-seed:
+    desc: "Seed the database"
+    cmds:
+      - poetry run prisma db seed
+
+  clean:
+    desc: "Clean backend generated files"
+    cmds:
+      - rm -rf .venv
+      - rm -rf __pycache__
+      - rm -rf src/__pycache__
+
+  init:
+    desc: "Initialize backend project"
+    cmds:
+      - poetry install
+      - task: prisma-generate
+      - task: prisma-deploy
+      - task: prisma-seed

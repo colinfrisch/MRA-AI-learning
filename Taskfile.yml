@@ -6,7 +6,27 @@ vars:
   MYSQL_PASSWORD: "local_password"
   MYSQL_DATABASE: "mra_db"
   MYSQL_CONTAINER: "mra_db"
+
+
+
+includes:
+  backend:
+    taskfile: ../backend/Taskfile.yml
+    dir: ../
+  frontend:
+    taskfile: ../frontend/Taskfile.yml
+    dir: ./
+
 tasks:
+  init:
+    desc: "Initialize the project"
+    deps:
+      - backend:init
+      - frontend:init
+
+
+-----
+
   clean:
     desc: "Remove generated files but keep poetry.lock"
     cmds:
