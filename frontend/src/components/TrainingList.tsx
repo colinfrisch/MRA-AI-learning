@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
 import { useState } from "react";
 import styles from "./TrainingList.module.css";
@@ -19,24 +19,24 @@ interface TrainingListProps {
 export function TrainingList({ title = "Current Training", endpoint, field }: TrainingListProps) {
   const [trainings, setTrainings] = useState<TrainingResponse[]>([]);
 
-  const fetchTrainings = async () => {
+  const fetchTrainings = useCallback(async () => {
     try {
-      const url = field 
-        ? `${endpoint}?field=${encodeURIComponent(field)}` 
+      const url = field
+        ? `${endpoint}?field=${encodeURIComponent(field)}`
         : endpoint;
-        
+
       const response: AxiosResponse<TrainingResponse[]> = await axios.get(url);
       setTrainings(Array.isArray(response.data) ? response.data : [response.data]);
     } catch (error) {
       console.error('Failed to fetch trainings:', error);
     }
-  };
-  
+  }, [endpoint, field]);
+
   // Use useEffect with empty dependency array to ensure the API is only called once
   useEffect(() => {
     fetchTrainings();
-  }, [endpoint, field]);
-  
+  }, [fetchTrainings]);
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>{title}</h2>
