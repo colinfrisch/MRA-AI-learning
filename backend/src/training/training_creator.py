@@ -1,11 +1,8 @@
-from backend.training_manager import TrainingManager
-from concurrent.futures import ThreadPoolExecutor
 from chat.openai_agent import OpenAIAgent
 from typing import List, Dict
 from prisma import Prisma, Json
 from prisma.errors import PrismaError
-from prisma.types import TrainingWhereInput
-from prisma.models import Training, Chapter
+from prisma.models import Training
 
 
 class TrainingCreator:
@@ -75,22 +72,21 @@ class TrainingCreator:
                 chapter["name"],
             )
 
-      # with ThreadPoolExecutor() as executor:
-      #     for chapter in training_json:
-      #         print("Creating chapter " + chapter["name"])
-      #         executor.submit(
-      #             self.create_chapter,
-      #             field,
-      #             subject,
-      #             training,
-      #             int(chapter["id"]),
-      #             chapter["name"],
-      #         )
+    # with ThreadPoolExecutor() as executor:
+    #     for chapter in training_json:
+    #         print("Creating chapter " + chapter["name"])
+    #         executor.submit(
+    #             self.create_chapter,
+    #             field,
+    #             subject,
+    #             training,
+    #             int(chapter["id"]),
+    #             chapter["name"],
+    #         )
 
     def create_and_add_to_db(self, field: str, subject: str) -> Training:
         print("Creating training...")
-        training_summary = self.openai_agent.create_training_summary(
-            field, subject)
+        training_summary = self.openai_agent.create_training_summary(field, subject)
         if training_summary is None:
             raise ValueError("Training summary cannot be None")
         training_json: List[Dict[str, str]] = training_summary

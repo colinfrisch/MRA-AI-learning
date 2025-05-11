@@ -17,6 +17,12 @@ openai = "^1.61.1"
 toml = "^0.10.2"
 prisma = "^0.15.0"
 python-dotenv = "^1.0.1"
+flask = "^2.0"
+flask-cors = "^3.0"
+
+
+[tool.poetry.scripts]
+main = "src.main:main"
 
 
 [tool.poetry.dev-dependencies]

@@ -1,7 +1,7 @@
 import os
 import re
 import json
-from openai import NotGiven, OpenAI
+from openai import OpenAI
 from openai.types.chat import ChatCompletion
 
 json_pattern = re.compile(r"```json\s*(.*?)```", re.DOTALL)
@@ -9,7 +9,7 @@ json_pattern = re.compile(r"```json\s*(.*?)```", re.DOTALL)
 
 class OpenAIAgent:
     def __init__(self):
-        api_key = os.getenv('OPENAI_API_KEY')
+        api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("OPENAI_API_KEY environment variable not set")
         self.client = OpenAI(api_key=api_key)
@@ -36,8 +36,9 @@ class OpenAIAgent:
             content = content.replace("[[SUJET]]", subject)
             messages.append({"role": "user", "content": content})
 
-        response_content = self.generate_response(
-            messages=messages).choices[0].message.content
+        response_content = (
+            self.generate_response(messages=messages).choices[0].message.content
+        )
         return self.extract_json_content(response_content) if response_content else None
 
     # create the content of a chapter
@@ -50,8 +51,9 @@ class OpenAIAgent:
             content = content.replace("[[SUJET]]", subject)
             messages.append({"role": "user", "content": content})
 
-        response_content = self.generate_response(
-            messages=messages).choices[0].message.content
+        response_content = (
+            self.generate_response(messages=messages).choices[0].message.content
+        )
         return self.extract_json_content(response_content) if response_content else None
 
     def extract_json_content(self, content: str):

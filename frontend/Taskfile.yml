@@ -1,0 +1,33 @@
+version: '3'
+
+tasks:
+  clean:
+    desc: "Clean frontend build artifacts"
+    cmds:
+      - rm -rf node_modules
+      - rm -rf build
+
+  init:
+    desc: "Initialize frontend project"
+    cmds:
+      - npm install
+
+  run:
+    desc: "Run the React frontend"
+    cmds:
+      - npm start
+
+  build:
+    desc: "Build the React frontend for production"
+    cmds:
+      - npm run build
+
+  test:
+    desc: "Run unit tests for the React frontend"
+    cmds:
+      - npm test
+
+  lint:
+    desc: "Run ESLint to check code quality"
+    cmds:
+      - npm run lint

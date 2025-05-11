@@ -11,11 +11,11 @@ vars:
 
 includes:
   backend:
-    taskfile: ../backend/Taskfile.yml
-    dir: ../
+    taskfile: ./backend/Taskfile.yml
+    dir: ./backend
   frontend:
-    taskfile: ../frontend/Taskfile.yml
-    dir: ./
+    taskfile: ./frontend/Taskfile.yml
+    dir: ./frontend
 
 tasks:
   init:
@@ -23,31 +23,14 @@ tasks:
     deps:
       - backend:init
       - frontend:init
-
-
------
+    cmds:
+      - echo "Initializing project..."
 
   clean:
     desc: "Remove generated files but keep poetry.lock"
-    cmds:
-      - rm -fr .venv
-      - rm -fr src/frontend/node_modules
-
-  init:
-    desc: "Setup complete project with both backend and frontend"
-    cmds:
-      - task: create-env-file
-      - poetry install
-      - task: prisma-generate
-      - task: run-database
-      - PYTHONPATH=src poetry run prisma migrate deploy
-      - task: setup-frontend
-
-  setup-frontend:
-    desc: "Install frontend dependencies"
-    dir: ./src/frontend
-    cmds:
-      - npm install
+    deps:
+      - backend:clean
+      - frontend:clean
 
   run-frontend:
     desc: "Run the React frontend"
@@ -55,28 +38,19 @@ tasks:
     cmds:
       - npm start
 
-  run-backend:
-    desc: "Run the Flask backend server"
-    cmds:
-      - PYTHONPATH=src poetry run python src/server/main.py
-
   run:
     desc: "Run both frontend and backend"
     cmds:
       - task: run-database
-      - task: run-backend 
-      - task: run-frontend
+    deps:
+      - backend:run
+      - frontend:run
 
   test:
     desc: "Run tests with unittest"
-    cmds:
-      - PYTHONPATH=src poetry run python -m unittest discover
-
-  test-coverage:
-    desc: "Run tests with coverage reporting"
-    cmds:
-      - PYTHONPATH=src poetry run coverage run -m unittest discover
-      - poetry run coverage report
+    deps:
+      - backend:test
+      - frontend:test
 
   run-database:
     desc: "Start MySQL database with Docker Compose"
@@ -95,43 +69,20 @@ tasks:
     cmds:
       - docker exec -it {{.MYSQL_CONTAINER}} mysql -h127.0.0.1 -u{{.MYSQL_USER}} -p{{.MYSQL_PASSWORD}} {{.MYSQL_DATABASE}}
 
-  create-env-file:
-    desc: "Create the .env file if it does not exist"
-    cmds:
-      - |
-        if [ ! -f .env ]; then
-          echo "DATABASE_URL=\"mysql://{{.MYSQL_USER}}:{{.MYSQL_PASSWORD}}@127.0.0.1:{{.MYSQL_PORT}}/{{.MYSQL_DATABASE}}\"" >> .env
-          echo "Please set your OPENAI_API_KEY in the .env file"
-        fi
-    status:
-      - test -f .env
-
-  prisma-create-migration:
-    desc: "Create a new Prisma migration, please provide name=<migration-name>"
-    cmds:
-      - poetry run prisma migrate dev --name {{.name}}
-
-  prisma-generate:
-    desc: "Generate Prisma client"
-    cmds:
-      - poetry run prisma generate --no-hints
-
-  prisma-seed:
-    desc: "Seed the database"
-    cmds:
-      - poetry run prisma db seed
-
-  prisma-deploy:
-    desc: "Deploy Prisma migrations"
-    cmds:
-      - poetry run prisma migrate deploy
+  build:
+    desc: "Build both frontend and backend projects"
+    deps:
+      - backend:build
+      - frontend:build
 
   lint:
-    desc: "Lint the codebase"
-    cmds:
-      - poetry run flake8 src tests
+    desc: "Lint both frontend and backend codebases"
+    deps:
+      - backend:lint
+      - frontend:lint
 
-  format:
-    desc: "Format the codebase"
+  deploy:
+    desc: "Deploy the full-stack application"
     cmds:
-      - poetry run black src tests
+      - echo "Deploying application..."
+      - echo "Ensure deployment scripts are configured."

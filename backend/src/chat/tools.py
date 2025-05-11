@@ -19,13 +19,19 @@ def get_tool_definitions():
             "type": "function",
             "function": {
                 "name": "get_all_training_summary_for_field",
-                "description": "Obtenir la liste des programmes d'apprentissage disponibles pour un domaine donné",
+                "description": (
+                    "Obtenir la liste des programmes d'apprentissage disponibles "
+                    "pour un domaine donné"
+                ),
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "field": {
                             "type": "string",
-                            "description": "le domaine pour lequel on veut obtenir les programmes d'apprentissage",
+                            "description": (
+                                "le domaine pour lequel on veut obtenir les "
+                                "programmes d'apprentissage"
+                            ),
                         }
                     },
                     "required": ["field"],
@@ -36,7 +42,10 @@ def get_tool_definitions():
             "type": "function",
             "function": {
                 "name": "create_training",
-                "description": "Créer un nouveau programme d'apprentissage à partir de la description fournie",
+                "description": (
+                    "Créer un nouveau programme d'apprentissage à partir de la "
+                    "description fournie"
+                ),
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -49,7 +58,7 @@ def get_tool_definitions():
                             "description": "Domaine du programme d'apprentissage",
                         },
                     },
-                    "required": ["description", "field"],
+                    "required": ["subject", "field"],
                 },
             },
         },
@@ -74,7 +83,7 @@ def get_tool_definitions():
                             "description": "L'identifiant du programme d'apprentissage",
                         },
                     },
-                    "required": ["description"],
+                    "required": ["name", "phone", "program_id"],
                 },
             },
         },

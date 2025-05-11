@@ -1,8 +1,5 @@
-# training_manager.py
 from prisma import Prisma
-import json
-from typing import List, Optional
-from prisma.models import Training, Chapter
+from prisma.models import Training
 
 
 class TrainingManager:
@@ -30,7 +27,7 @@ class TrainingManager:
             where={"field": field},
         )
 
-    def get_training_by_id(self, training_id: int) -> (Training | None):
+    def get_training_by_id(self, training_id: int) -> Training | None:
         return self.db.training.find_unique(
             where={"id": int(training_id)}, include={"chapters": True}
         )

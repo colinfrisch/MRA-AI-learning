@@ -1,8 +1,7 @@
 import json
-from openai import OpenAI
-from backend.training_manager import TrainingManager
-from backend.user_manager import UserManager
-from backend.training_creator import TrainingCreator
+from db.training_manager import TrainingManager
+from db.user_manager import UserManager
+from training.training_creator import TrainingCreator
 import re
 from chat.openai_agent import OpenAIAgent
 import os
@@ -111,8 +110,7 @@ class ChatManager:
             print(f"assistant_message: {assistant_message}")
 
             if assistant_message.tool_calls:
-                print("assistant_message.tool_calls: ",
-                      assistant_message.tool_calls)
+                print("assistant_message.tool_calls: ", assistant_message.tool_calls)
                 tool_call = assistant_message.tool_calls[0]
                 function_name = tool_call.function.name
                 arguments = json.loads(tool_call.function.arguments)
@@ -128,16 +126,24 @@ class ChatManager:
                     else:
                         result = "Pas de programme d'apprentissage disponible"
                 elif function_name == "get_all_training_summary_for_field":
-                    all_trainings = self.training_manager.get_all_training_summary_for_field(
-                        arguments["field"]
+                    all_trainings = (
+                        self.training_manager.get_all_training_summary_for_field(
+                            arguments["field"]
+                        )
                     )
                     if all_trainings and len(all_trainings) > 0:
-                        # convert the list of training to string by appending a new line with training name
+                        # convert the list of training to string by appending a new line
+                        # with training name
                         result = "Trainings\n"
                         for training in all_trainings:
-                            result += f"- {training.field} - {training.name} (training_id: {training.id})\n"
+                            result += (
+                                f"- {training.field} - {training.name} "
+                                f"(training_id: {training.id})\n"
+                            )
                     else:
-                        result = "Pas de programme d'apprentissage disponible pour ce domaine"
+                        result = (
+                            "Pas de programme d'apprentissage disponible pour ce domaine"
+                        )
                 elif function_name == "create_training":
                     print(
                         "...Création d'un programme d'apprentissage avec : ",
@@ -147,35 +153,38 @@ class ChatManager:
                         arguments["field"], arguments["subject"]
                     )
                     result = json.dumps(
-                        f"training created {training.field} - {training.name}")
+                        f"training created {training.field} - {training.name}"
+                    )
                 elif function_name == "get_training_by_id":
-                    training = self.training_manager.get_training_by_id(
-                        arguments["id"])
+                    training = self.training_manager.get_training_by_id(arguments["id"])
                     if training:
-                        result = f"{training.field} - {training.name} (training_id: {training.id})"
+                        result = (
+                            f"{training.field} - {training.name} "
+                            f"(training_id: {training.id})"
+                        )
                     else:
                         result = "Aucun programme d'apprentissage trouvé"
 
                 elif function_name == "subscribe_user_to_training":
-                    user = self.user_manager.get_user_by_name(
-                        arguments["name"])
-                    user = self.user_manager.get_user_by_name(
-                        arguments["name"])
+                    user = self.user_manager.get_user_by_name(arguments["name"])
+                    user = self.user_manager.get_user_by_name(arguments["name"])
                     if not user:
                         print(
-                            f"...Creating user {arguments['name']} with phone {arguments['phone']}"
+                            f"...Creating user {arguments['name']} with phone "
+                            f"{arguments['phone']}"
                         )
                         user = self.user_manager.create_user(
                             arguments["name"], arguments["phone"]
                         )
                     print(
-                        f"...Subscribe user.id {user.id} to training  {arguments['program_id']}"
+                        f"...Subscribe user.id {user.id} to training  "
+                        f"{arguments['program_id']}"
                     )
                     training = self.training_manager.get_training_by_id(
-                        arguments["program_id"])
+                        arguments["program_id"]
+                    )
                     if training:
-                        self.user_manager.start_training(
-                            user, training)
+                        self.user_manager.start_training(user, training)
                     result = "Utilisateur inscrit avec succès!"
 
                 else:
@@ -227,10 +236,8 @@ class ChatManager:
         return self.session_finished
 
     def respond_to_user(self, user_message):
-        self.messages.append(
-            {"role": "user", "content": user_message, "display": True})
-        self.messages.append(
-            {"role": "user", "content": user_message, "display": True})
+        self.messages.append({"role": "user", "content": user_message, "display": True})
+        self.messages.append({"role": "user", "content": user_message, "display": True})
         return self.get_next_message()
 
     def get_messages(self):
