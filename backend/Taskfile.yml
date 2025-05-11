@@ -20,9 +20,9 @@ tasks:
       - "PYTHONPATH=./src poetry run python src/main.py"
 
   test:
-    desc: "Run tests with pytest"
+    desc: "Run tests with unittest"
     cmds:
-      - poetry run python -m unittest discover -s tests
+      - "PYTHONPATH=./src poetry run python -m unittest discover -s tests "
 
   test-coverage:
     desc: "Run tests with coverage reporting"
@@ -71,19 +71,18 @@ tasks:
   lint:
     desc: "Run linters for code quality"
     cmds:
-      - poetry run flake8
-      - poetry run black --check .
+      - poetry run flake8 --config=.flake8
+      - poetry run black --check . --config pyproject.toml
 
   format:
     desc: "Format the codebase"
     cmds:
-      - poetry run black src tests
+      - poetry run black src tests --config pyproject.toml
 
   migrate:
     desc: "Apply Prisma migrations"
     cmds:
-      - poetry run prisma migrate deploy``
-
+      - poetry run prisma migrate deploy
 
   create-env-file:
     desc: "Create the .env file if it does not exist"

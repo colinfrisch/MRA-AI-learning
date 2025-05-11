@@ -110,7 +110,8 @@ class ChatManager:
             print(f"assistant_message: {assistant_message}")
 
             if assistant_message.tool_calls:
-                print("assistant_message.tool_calls: ", assistant_message.tool_calls)
+                print("assistant_message.tool_calls: ",
+                      assistant_message.tool_calls)
                 tool_call = assistant_message.tool_calls[0]
                 function_name = tool_call.function.name
                 arguments = json.loads(tool_call.function.arguments)
@@ -156,7 +157,8 @@ class ChatManager:
                         f"training created {training.field} - {training.name}"
                     )
                 elif function_name == "get_training_by_id":
-                    training = self.training_manager.get_training_by_id(arguments["id"])
+                    training = self.training_manager.get_training_by_id(
+                        arguments["id"])
                     if training:
                         result = (
                             f"{training.field} - {training.name} "
@@ -166,8 +168,10 @@ class ChatManager:
                         result = "Aucun programme d'apprentissage trouvé"
 
                 elif function_name == "subscribe_user_to_training":
-                    user = self.user_manager.get_user_by_name(arguments["name"])
-                    user = self.user_manager.get_user_by_name(arguments["name"])
+                    user = self.user_manager.get_user_by_name(
+                        arguments["name"])
+                    user = self.user_manager.get_user_by_name(
+                        arguments["name"])
                     if not user:
                         print(
                             f"...Creating user {arguments['name']} with phone "
@@ -208,7 +212,6 @@ class ChatManager:
                     )
                     if json_match:
                         json_content = json_match.group(1).strip()
-                        message_dict = json.loads(json_content)
                         text_before_json = assistant_message.content.split("```json")[
                             0
                         ].strip()
@@ -236,8 +239,10 @@ class ChatManager:
         return self.session_finished
 
     def respond_to_user(self, user_message):
-        self.messages.append({"role": "user", "content": user_message, "display": True})
-        self.messages.append({"role": "user", "content": user_message, "display": True})
+        self.messages.append(
+            {"role": "user", "content": user_message, "display": True})
+        self.messages.append(
+            {"role": "user", "content": user_message, "display": True})
         return self.get_next_message()
 
     def get_messages(self):

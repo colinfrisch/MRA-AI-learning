@@ -4,11 +4,11 @@ from unittest.mock import patch
 from training.training_creator import TrainingCreator
 from db.user_manager import UserManager
 from prisma import Prisma
-from db.test_training_creator import TestTrainingCreator
+from tests.db.test_training_creator import TestTrainingCreator
 
 
 class TestUserManager(unittest.TestCase):
-    @patch("backend.training_creator.OpenAIAgent")
+    @patch("training.training_creator.OpenAIAgent")
     def setUp(self, MockOpenAIAgent):
         self.test_username = "test_doe"
         self.user_manager = UserManager()
@@ -26,7 +26,8 @@ class TestUserManager(unittest.TestCase):
         # create a user if necessary and cleanup the eval and current chapter
         user = db.user.find_first(where={"username": self.test_username})
         if not user:
-            user = self.user_manager.create_user(self.test_username, "123-456-7890")
+            user = self.user_manager.create_user(
+                self.test_username, "123-456-7890")
         else:
             # remove eval, trainings...
             db.eval.delete_many(where={"user_id": user.id})
@@ -52,10 +53,12 @@ class TestUserManager(unittest.TestCase):
 
             # start the training
             chapter = self.user_manager.start_training(user, training)
-            self.assertIsNotNone(chapter, "Failed to start training: no chapter found")
+            self.assertIsNotNone(
+                chapter, "Failed to start training: no chapter found")
             # start the training
             chapter = self.user_manager.start_training(user, training)
-            self.assertIsNotNone(chapter, "Failed to start training: no chapter found")
+            self.assertIsNotNone(
+                chapter, "Failed to start training: no chapter found")
 
             # iterate over the chapters until one is None
             score = 0
@@ -88,7 +91,8 @@ class TestUserManager(unittest.TestCase):
                 "User still has a current chapter after finishing training",
             )
             self.assertEqual(
-                self.user_manager.get_score_for_user(user), score, "Score don't match"
+                self.user_manager.get_score_for_user(
+                    user), score, "Score don't match"
             )
 
             # self.assertTrue(self.user_manager.get_finised_trainings(user).index(training))

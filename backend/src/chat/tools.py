@@ -7,7 +7,9 @@ def get_tool_definitions():
             "type": "function",
             "function": {
                 "name": "get_training_list",
-                "description": "Obtenir la liste des programmes d'apprentissage disponibles",
+                "description": (
+                    "Obtenir la liste des programmes d'apprentissage disponibles"
+                ),
                 "parameters": {
                     "type": "object",
                     "properties": {},
@@ -51,11 +53,15 @@ def get_tool_definitions():
                     "properties": {
                         "subject": {
                             "type": "string",
-                            "description": "Sujet du programme d'apprentissage",
+                            "description": (
+                                "Sujet du programme d'apprentissage"
+                            ),
                         },
                         "field": {
                             "type": "string",
-                            "description": "Domaine du programme d'apprentissage",
+                            "description": (
+                                "Domaine du programme d'apprentissage"
+                            ),
                         },
                     },
                     "required": ["subject", "field"],
@@ -66,21 +72,29 @@ def get_tool_definitions():
             "type": "function",
             "function": {
                 "name": "subscribe_user_to_training",
-                "description": "Souscrire un utilisateur à un programme d'apprentissage",
+                "description": (
+                    "Souscrire un utilisateur à un programme d'apprentissage"
+                ),
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "name": {
                             "type": "string",
-                            "description": "Le prenom de l'utilisateur",
+                            "description": (
+                                "Le prenom de l'utilisateur"
+                            ),
                         },
                         "phone": {
                             "type": "string",
-                            "description": "Le numéro de téléphone de l'utilisateur",
+                            "description": (
+                                "Le numéro de téléphone de l'utilisateur"
+                            ),
                         },
                         "program_id": {
                             "type": "string",
-                            "description": "L'identifiant du programme d'apprentissage",
+                            "description": (
+                                "L'identifiant du programme d'apprentissage"
+                            ),
                         },
                     },
                     "required": ["name", "phone", "program_id"],
