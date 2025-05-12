@@ -1,4 +1,4 @@
-# MRA (My React App)
+# MRA
 
 This project consists of a React frontend and a Flask backend with a MySQL database.
 
