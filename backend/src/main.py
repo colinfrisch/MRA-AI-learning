@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from prisma import Prisma
-from training.training_creator import TrainingCreator
-from db.training_manager import TrainingManager
-from db.user_manager import UserManager
+from backend.src.training.training_creator import TrainingCreator
+from backend.src.db.training_manager import TrainingManager
+from backend.src.db.user_manager import UserManager
 
 db = Prisma()
 db.connect()

@@ -1,4 +1,4 @@
-from chat.openai_agent import OpenAIAgent
+from backend.src.chat.openai_agent import OpenAIAgent
 from typing import List, Dict
 from prisma import Prisma, Json
 from prisma.errors import PrismaError
